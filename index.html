@@ -369,7 +369,7 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
 
 <script>
 /* ===== Settings for the cafe ===== */
-const APP_VERSION = '1.2';
+const APP_VERSION = '1.3';
 const CONFIG = {
   cafeName: 'Ваша кофейня',        // printed at the top of the receipt
   handleLabel: 'Мы в сети',        // line above the handle, no platform named
@@ -971,11 +971,16 @@ $('#btTest').addEventListener('click', async () => {
 });
 function btStatusLine(){ return `${bt.device?.name || ''} · ${bt.kind === 'cat' ? 'мини-принтер' : 'ESC/POS'} · ${bt.info || ''}`; }
 
-// Fullscreen on the tablet after the first tap
-if (CONFIG.fullscreen && btUsable){
+// Fullscreen on the tablet: an installed app already runs fullscreen, so only a browser tab asks,
+// and only on a tap on the home screen, never more than once a minute (each request dims the screen)
+const installed = matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches;
+if (CONFIG.fullscreen && btUsable && !installed){
+  let lastAsk = 0;
   document.addEventListener('pointerdown', () => {
-    if (!document.fullscreenElement && document.documentElement.requestFullscreen)
-      document.documentElement.requestFullscreen({navigationUI:'hide'}).catch(() => {});
+    if (state !== 'home' || document.fullscreenElement || !document.documentElement.requestFullscreen) return;
+    if (Date.now() - lastAsk < 60000) return;
+    lastAsk = Date.now();
+    document.documentElement.requestFullscreen({navigationUI:'hide'}).catch(() => {});
   });
 }
 
