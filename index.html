@@ -252,21 +252,18 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
           <rect x="40" y="152" width="160" height="9" rx="4.5" fill="#5A3B2C"/>
           <rect x="52" y="154" width="136" height="3" rx="1.5" fill="#B9A595"/>
           <path d="M44 176 Q120 188 196 176" stroke="#FFFFFF" stroke-width="4" fill="none" stroke-linecap="round" opacity=".8"/>
-          <!-- face -->
+          <!-- face: big soft eyes, tiny mouth -->
           <g class="eyes">
-            <g stroke="#2E211A" stroke-width="4" stroke-linecap="round">
-              <path d="M74 80 L68 72"/><path d="M84 74 L83 64"/><path d="M94 76 L99 69"/>
-              <path d="M146 76 L141 69"/><path d="M156 74 L157 64"/><path d="M166 80 L172 72"/>
-            </g>
-            <circle cx="86" cy="98" r="19" fill="#2E211A"/>
-            <circle cx="154" cy="98" r="19" fill="#2E211A"/>
-            <circle cx="84" cy="95" r="8.5" fill="#FFFFFF"/><circle cx="84" cy="95" r="5" fill="#2E211A"/>
-            <circle cx="152" cy="95" r="8.5" fill="#FFFFFF"/><circle cx="152" cy="95" r="5" fill="#2E211A"/>
-            <circle cx="93" cy="104" r="2.8" fill="#FFFFFF"/><circle cx="161" cy="104" r="2.8" fill="#FFFFFF"/>
+            <path d="M70 104 Q64 101 61 96 M74 98 Q70 93 70 87" stroke="#2E211A" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+            <path d="M170 104 Q176 101 179 96 M166 98 Q170 93 170 87" stroke="#2E211A" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+            <ellipse cx="84" cy="112" rx="13" ry="15.5" fill="#2E211A"/>
+            <ellipse cx="156" cy="112" rx="13" ry="15.5" fill="#2E211A"/>
+            <circle cx="79.5" cy="105.5" r="5.2" fill="#FFFFFF"/><circle cx="151.5" cy="105.5" r="5.2" fill="#FFFFFF"/>
+            <circle cx="88.5" cy="118.5" r="2.3" fill="#FFFFFF"/><circle cx="160.5" cy="118.5" r="2.3" fill="#FFFFFF"/>
           </g>
-          <ellipse cx="62" cy="128" rx="12" ry="10" fill="#F39BB2"/>
-          <ellipse cx="178" cy="128" rx="12" ry="10" fill="#F39BB2"/>
-          <path d="M101 126 Q104 132 109 128 Q114 136 120 129 Q126 136 131 128 Q136 132 139 126" stroke="#2E211A" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="62" cy="134" rx="12" ry="8" fill="#F7A8BB"/>
+          <ellipse cx="178" cy="134" rx="12" ry="8" fill="#F7A8BB"/>
+          <path d="M111 125 Q115.5 131 120 126 Q124.5 131 129 125" stroke="#2E211A" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
       <div class="ground" aria-hidden="true"></div>
@@ -342,14 +339,13 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
           <rect x="30" y="14" width="200" height="98" rx="42" fill="#FFFBF5"/>
           <ellipse cx="88" cy="28" rx="36" ry="6" fill="#FFFFFF" opacity=".9"/>
           <g class="eyes">
-            <circle cx="102" cy="52" r="14" fill="#2E211A"/><circle cx="158" cy="52" r="14" fill="#2E211A"/>
-            <circle cx="100" cy="50" r="6.2" fill="#FFFFFF"/><circle cx="100" cy="50" r="3.6" fill="#2E211A"/>
-            <circle cx="156" cy="50" r="6.2" fill="#FFFFFF"/><circle cx="156" cy="50" r="3.6" fill="#2E211A"/>
-            <circle cx="107" cy="57" r="2.2" fill="#FFFFFF"/><circle cx="163" cy="57" r="2.2" fill="#FFFFFF"/>
+            <ellipse cx="104" cy="56" rx="10" ry="12" fill="#2E211A"/><ellipse cx="156" cy="56" rx="10" ry="12" fill="#2E211A"/>
+            <circle cx="100.5" cy="51" r="4" fill="#FFFFFF"/><circle cx="152.5" cy="51" r="4" fill="#FFFFFF"/>
+            <circle cx="107.5" cy="61" r="1.8" fill="#FFFFFF"/><circle cx="159.5" cy="61" r="1.8" fill="#FFFFFF"/>
           </g>
-          <ellipse cx="78" cy="74" rx="10" ry="8" fill="#F39BB2"/>
-          <ellipse cx="182" cy="74" rx="10" ry="8" fill="#F39BB2"/>
-          <path class="mouth" d="M114 72 Q116 76 120 74 Q124 79 130 74 Q136 79 140 74 Q144 76 146 72" stroke="#2E211A" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="84" cy="72" rx="10" ry="6.5" fill="#F7A8BB"/>
+          <ellipse cx="176" cy="72" rx="10" ry="6.5" fill="#F7A8BB"/>
+          <path class="mouth" d="M123 69 Q126.5 74 130 70 Q133.5 74 137 69" stroke="#2E211A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
           <rect x="54" y="98" width="152" height="12" rx="6" fill="#5A3B2C"/>
         </g>
       </svg>
@@ -371,7 +367,7 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
       <p id="btStatus">Принтер не подключён</p>
       <p>Включите принтер, нажмите «Подключить» и выберите его в списке. Делать это нужно после каждого перезапуска страницы, если принтер не подхватился сам.</p>
       <div class="staff-row"><label for="pwSel">Ширина ленты</label>
-        <select id="pwSel"><option value="384">57 мм (384 точки)</option><option value="576">80 мм (576 точек)</option></select></div>
+        <select id="pwSel"><option value="384">57 мм (384 точки)</option><option value="576">80 мм (только для больших чековых принтеров)</option></select></div>
       <div class="staff-row"><label for="protoSel">Протокол</label>
         <select id="protoSel"><option value="auto">Определить самому</option><option value="cat">Мини-принтер (Fun Print и подобные)</option><option value="escpos">ESC/POS (Phomemo, чековые)</option></select></div>
       <div class="staff-row"><label for="chunkSel">Размер пакета</label>
@@ -395,7 +391,7 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
 
 <script>
 /* ===== Settings for the cafe ===== */
-const APP_VERSION = '1.5';
+const APP_VERSION = '1.6';
 const CONFIG = {
   cafeName: 'Ваша кофейня',        // printed at the top of the receipt
   handleLabel: 'Мы в сети',        // line above the handle, no platform named
