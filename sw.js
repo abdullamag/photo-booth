@@ -1,6 +1,6 @@
 /* Photo booth service worker: works offline, picks up new versions when online.
    Bump CACHE on every release. */
-const CACHE = 'booth-v1.9';
+const CACHE = 'booth-v2.0';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

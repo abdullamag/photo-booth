@@ -214,6 +214,9 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
 .staff-card p{margin:0;font-size:15px;line-height:1.45;color:var(--cocoa-soft)}
 .staff-card #btStatus{color:var(--cocoa);font-weight:800}
 .staff-card h4{margin:6px 0 0;font-weight:900;font-size:17px}
+.tech{border-top:2px dashed var(--milk);padding-top:12px}
+.tech summary{cursor:pointer;font-weight:800;font-size:15px;color:var(--cocoa-soft)}
+.tech-body{display:flex;flex-direction:column;gap:14px;margin-top:12px}
 .staff-field{display:flex;flex-direction:column;gap:6px;font-size:16px}
 .staff-field input{font:inherit;font-weight:700;padding:10px 14px;border-radius:14px;border:2px solid var(--milk);background:var(--cream);color:var(--cocoa);width:100%}
 .staff-field input:focus{outline:3px solid var(--caramel);outline-offset:1px}
@@ -354,24 +357,36 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
       <div class="staff-field"><label for="cafeIn">Название заведения</label><input id="cafeIn" type="text" maxlength="40" autocomplete="off"></div>
       <div class="staff-field"><label for="handleIn">Ник в соцсетях</label><input id="handleIn" type="text" maxlength="40" autocomplete="off" placeholder="@vasha_kofeynya"></div>
       <p>Печатаются на каждом снимке. Если ник оставить пустым, строки с ником не будет.</p>
+      <h4>Снимок</h4>
+      <div class="staff-row"><label for="toneSel">Тон снимка</label>
+        <select id="toneSel"><option value="light">Светлее</option><option value="normal">Обычный</option><option value="dark">Темнее</option></select></div>
       <h4>Принтер</h4>
       <p id="btStatus">Принтер не подключён</p>
-      <p>Включите принтер, нажмите «Подключить» и выберите его в списке. Делать это нужно после каждого перезапуска страницы, если принтер не подхватился сам.</p>
-      <div class="staff-row"><label for="pwSel">Ширина ленты</label>
-        <select id="pwSel"><option value="384">57 мм (384 точки)</option><option value="576">80 мм (только для больших чековых принтеров)</option></select></div>
-      <div class="staff-row"><label for="protoSel">Протокол</label>
-        <select id="protoSel"><option value="auto">Определить самому</option><option value="cat">Мини-принтер (Fun Print и подобные)</option><option value="escpos">ESC/POS (Phomemo, чековые)</option></select></div>
-      <div class="staff-row"><label for="chunkSel">Размер пакета</label>
-        <select id="chunkSel"><option value="20">20 байт (надёжно)</option><option value="100">100 байт</option><option value="180">180 байт (быстро)</option></select></div>
-      <div class="staff-row"><label for="delaySel">Скорость отправки</label>
-        <select id="delaySel"><option value="6">Быстро</option><option value="25">Средне</option><option value="60">Медленно</option></select></div>
-      <div class="staff-row"><label for="bandSel">Порции картинки</label>
-        <select id="bandSel"><option value="255">Крупные (255 строк)</option><option value="24">Мелкие (24 строки)</option><option value="1">По одной строке</option></select></div>
-      <div class="staff-row"><label for="feedSel">Запас перед отрывом</label>
-        <select id="feedSel"><option value="10">Маленький (1 см)</option><option value="18">Средний (2 см)</option><option value="28">Большой (3 см)</option></select></div>
+      <p>Включите принтер и нажмите «Подключить». Если после перезапуска точка в углу главного экрана не зелёная, подключите заново.</p>
       <div class="staff-btns">
         <button class="puff" id="btPair" type="button">Подключить</button>
         <button class="puff soft" id="btTest" type="button">Тестовая печать</button>
+      </div>
+      <details class="tech">
+        <summary>Для мастера</summary>
+        <div class="tech-body">
+          <p>Эти настройки уже подобраны под принтер. Меняйте их, только если ставите другой принтер.</p>
+          <p id="btDiag"></p>
+          <div class="staff-row"><label for="pwSel">Ширина ленты</label>
+            <select id="pwSel"><option value="384">57 мм (384 точки)</option><option value="576">80 мм (только для больших чековых принтеров)</option></select></div>
+          <div class="staff-row"><label for="protoSel">Протокол</label>
+            <select id="protoSel"><option value="auto">Определить самому</option><option value="cat">Мини-принтер (Fun Print и подобные)</option><option value="escpos">ESC/POS (Phomemo, чековые)</option></select></div>
+          <div class="staff-row"><label for="chunkSel">Размер пакета</label>
+            <select id="chunkSel"><option value="20">20 байт (надёжно)</option><option value="100">100 байт</option><option value="180">180 байт (быстро)</option></select></div>
+          <div class="staff-row"><label for="delaySel">Скорость отправки</label>
+            <select id="delaySel"><option value="6">Быстро</option><option value="25">Средне</option><option value="60">Медленно</option></select></div>
+          <div class="staff-row"><label for="bandSel">Порции картинки</label>
+            <select id="bandSel"><option value="255">Крупные (255 строк)</option><option value="24">Мелкие (24 строки)</option><option value="1">По одной строке</option></select></div>
+          <div class="staff-row"><label for="feedSel">Запас перед отрывом</label>
+            <select id="feedSel"><option value="10">Маленький (1 см)</option><option value="18">Средний (2 см)</option><option value="28">Большой (3 см)</option></select></div>
+        </div>
+      </details>
+      <div class="staff-btns">
         <button class="puff soft" id="appUpdate" type="button">Обновить приложение</button>
         <button class="puff soft" id="staffClose" type="button">Закрыть</button>
       </div>
@@ -384,7 +399,7 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
 
 <script>
 /* ===== Settings for the cafe ===== */
-const APP_VERSION = '1.9';
+const APP_VERSION = '2.0';
 const CONFIG = {
   cafeName: 'Ваша кофейня',        // printed at the top of the receipt
   handleLabel: 'Мы в сети',        // line above the handle, no platform named
@@ -393,7 +408,7 @@ const CONFIG = {
   printUrl: null,                  // optional network print server instead of Bluetooth
   printWidth: 384,                 // dots across: 384 for 57 mm mini printers, 576 for 80 mm
   catEnergy: 0x3000,               // darkness for mini printers: 0x2000 lighter, 0x6000 darker
-  btChunk: 20,                     // bytes per Bluetooth write; Android cuts longer packets to 20 unless the printer allows more
+  btChunk: 180,                    // bytes per Bluetooth write (180 works on YHK-154D; 20 is the safe fallback)
   btDelay: 6,                      // ms between writes; raise it if the printer skips lines
   fullscreen: true,                // go fullscreen on the tablet after the first tap
   defaultTimer: 3,                 // seconds: 0, 3, 5 or 10
@@ -737,9 +752,10 @@ function ditherPhoto(src, W, H){
   acc = 0;
   for (let v = 255; v >= 0; v--){ acc += hist[v]; if (acc > n * .02){ hi = v; break; } }
   const span = Math.max(1, hi - lo);
+  const gamma = {light:.62, normal:.8, dark:1}[prefs.tone] || .8;   // lower = lighter photo
   for (let i = 0; i < n; i++){
     let t = (g[i] - lo) / span; t = t < 0 ? 0 : t > 1 ? 1 : t;
-    g[i] = Math.pow(t, .8) * 255;
+    g[i] = Math.pow(t, gamma) * 255;
   }
   // Atkinson dithering
   const add = (xx, yy, e) => { if (xx >= 0 && xx < W && yy < H) g[yy * W + xx] += e; };
@@ -808,7 +824,7 @@ const BT_PROFILES = [
 ];
 const bt = {device:null, ch:null, kind:null, paused:false, busy:false, retry:0};
 const btUsable = !!navigator.bluetooth && !(document.featurePolicy && !document.featurePolicy.allowsFeature('bluetooth'));
-const prefs = {width:CONFIG.printWidth, protocol:'auto', printerName:'', chunk:CONFIG.btChunk, delay:CONFIG.btDelay, band:255, tail:18};
+const prefs = {width:CONFIG.printWidth, protocol:'auto', printerName:'', chunk:CONFIG.btChunk, delay:CONFIG.btDelay, band:1, tail:18, tone:'normal'};
 try { Object.assign(prefs, JSON.parse(localStorage.getItem('booth-prefs') || '{}')); } catch {}
 function savePrefs(p){ Object.assign(prefs, p); try { localStorage.setItem('booth-prefs', JSON.stringify(prefs)); } catch {} }
 function printWidth(){ return bt.kind === 'cat' ? 384 : (+prefs.width || 384); }
@@ -820,8 +836,10 @@ const pdot = $('#pdot'), btStatus = $('#btStatus');
 function setPrinterState(msg){
   const ok = !!(bt.device && bt.device.gatt.connected && bt.ch);
   pdot.className = 'pdot' + (ok ? ' ok' : bt.device ? ' bad' : '');
+  const diag = document.getElementById('btDiag');
+  if (diag) diag.textContent = ok ? `${bt.kind === 'cat' ? 'Мини-принтер' : 'ESC/POS'} · каналы ${bt.info || '—'}` : '';
   btStatus.textContent = msg || (!btUsable ? 'Bluetooth в этом окне недоступен. Откройте страницу в Chrome на планшете.'
-    : ok ? `Подключён: ${bt.device.name || 'принтер'} (${bt.kind === 'cat' ? 'мини-принтер' : 'ESC/POS'})${bt.info ? ' · ' + bt.info : ''}${/ae03/.test(bt.info || '') ? '. Похоже на новую модель: если тест не напечатается, сфотографируйте этот экран.' : ''}`
+    : ok ? `Подключён: ${bt.device.name || 'принтер'}`
     : bt.device ? 'Связь потеряна, переподключаюсь…' : 'Принтер не подключён');
 }
 
@@ -977,6 +995,8 @@ handleIn.addEventListener('change', () => {
   handleIn.value = h; CONFIG.handle = h;
   savePrefs({handle:h});
 });
+const toneSel = $('#toneSel'); toneSel.value = prefs.tone || 'normal';
+toneSel.addEventListener('change', () => savePrefs({tone:toneSel.value}));
 const delaySel = $('#delaySel'), bandSel = $('#bandSel');
 delaySel.value = String(prefs.delay); bandSel.value = String(prefs.band);
 delaySel.addEventListener('change', () => savePrefs({delay:+delaySel.value}));
@@ -1005,14 +1025,14 @@ $('#btTest').addEventListener('click', async () => {
   x.font = `900 ${Math.round(W / 8)}px Nunito, sans-serif`; x.textAlign = 'center';
   x.fillText('ТЕСТ ' + APP_VERSION, W / 2, 105);
   x.font = `700 ${Math.round(W / 18)}px Nunito, sans-serif`;
-  x.fillText(`п${prefs.chunk} · з${prefs.delay} · с${prefs.band}`, W / 2, 160);
+  x.fillText('Принтер работает!', W / 2, 160);
   x.fillRect(0, H - 16, W, 16);                              // full-width bar at the bottom
   const img = x.getImageData(0, 0, W, H), d = img.data;
   for (let i = 0; i < d.length; i += 4){ const v = d[i] < 128 ? 0 : 255; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
   x.putImageData(img, 0, 0);
   setPrinterState('Печатаю тест…');
   const t0 = performance.now();
-  try { await btPrint(c); setPrinterState(`Тест отправлен за ${((performance.now() - t0) / 1000).toFixed(1)} с. ` + btStatusLine()); }
+  try { await btPrint(c); setPrinterState(`Тест напечатан за ${((performance.now() - t0) / 1000).toFixed(1)} с`); }
   catch (e){ setPrinterState('Тест не напечатался: ' + e.message); }
 });
 function btStatusLine(){ return `${bt.device?.name || ''} · ${bt.kind === 'cat' ? 'мини-принтер' : 'ESC/POS'} · ${bt.info || ''}`; }
