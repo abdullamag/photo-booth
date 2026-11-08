@@ -1,0 +1,1038 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Фотобудка кофейни</title>
+<meta name="theme-color" content="#FFF4E6">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+</head>
+<body>
+<style>
+/* Plush kiosk: one full-height stage; four screens cross-fade on a soft spring.
+   Everything is round, stuffed and stitched. Deliberately single cream theme. */
+:root{
+  --cream:#FFF4E6;
+  --paper:#FFFBF5;
+  --milk:#F6E4CF;
+  --peach:#F8D3BC;
+  --rose:#E9A19D;
+  --rose-deep:#CF7E7A;
+  --caramel:#C98B4E;
+  --caramel-deep:#A66E3A;
+  --cocoa:#5A3B2C;
+  --cocoa-soft:#8C6B58;
+  --ok:#7FAE7A;
+  --bad:#D9736E;
+  --round:'Nunito', ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{height:100%;box-sizing:border-box}
+body{
+  height:100%;margin:0;overflow:hidden;
+  background:var(--cream);color:var(--cocoa);
+  font-family:var(--round);font-weight:600;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* Slow drifting cream clouds behind everything */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg i{position:absolute;border-radius:50%;filter:blur(40px);opacity:.55}
+.bg i:nth-child(1){width:60vmax;height:60vmax;left:-20vmax;top:-22vmax;background:var(--peach);animation:drift 26s ease-in-out infinite alternate}
+.bg i:nth-child(2){width:50vmax;height:50vmax;right:-18vmax;bottom:-20vmax;background:var(--milk);animation:drift 32s ease-in-out infinite alternate-reverse}
+@keyframes drift{to{transform:translate(6vmax,4vmax) scale(1.08)}}
+
+.app{position:relative;z-index:1;height:100%;max-width:920px;margin:0 auto}
+
+.screen{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:clamp(14px,2.6vh,28px);text-align:center;
+  padding-block:clamp(16px,3vh,40px);
+  opacity:0;visibility:hidden;transform:translateY(18px) scale(.97);
+  transition:opacity .55s ease,transform .9s cubic-bezier(.34,1.45,.64,1),visibility 0s linear .55s;
+}
+.screen.active{
+  opacity:1;visibility:visible;transform:none;
+  transition:opacity .55s ease,transform .9s cubic-bezier(.34,1.45,.64,1),visibility 0s;
+}
+
+h1,h2,.cam-head{font-family:var(--round);font-weight:900;margin:0;text-wrap:balance;color:var(--cocoa)}
+h1{font-size:clamp(40px,7.6vw,82px);line-height:1.02;letter-spacing:-.01em;
+   text-shadow:0 4px 0 var(--milk),0 10px 22px rgba(201,139,78,.22)}
+h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
+.lead{margin:0;max-width:30ch;font-size:clamp(17px,2.4vw,23px);line-height:1.45;color:var(--cocoa-soft)}
+.note{position:absolute;left:0;right:0;bottom:clamp(8px,2vh,22px);margin:0;
+  display:flex;justify-content:center;align-items:center;gap:8px;
+  font-size:14px;color:var(--cocoa-soft);opacity:.85}
+
+/* Puffy stuffed buttons with a sewn seam */
+.puff{
+  appearance:none;border:0;cursor:pointer;position:relative;
+  display:inline-flex;align-items:center;justify-content:center;gap:12px;
+  font-family:var(--round);font-weight:800;letter-spacing:.01em;
+  font-size:clamp(20px,3vw,28px);color:var(--paper);background:var(--rose);
+  padding:20px 44px;border-radius:999px;will-change:transform;
+  box-shadow:inset 0 7px 12px rgba(255,251,245,.45),inset 0 -9px 16px rgba(150,72,64,.26),0 14px 28px rgba(90,59,44,.18);
+}
+.puff::after{content:"";position:absolute;inset:7px;border-radius:inherit;border:2.5px dashed rgba(255,251,245,.65);pointer-events:none}
+.puff.soft{background:var(--paper);color:var(--caramel-deep);
+  box-shadow:inset 0 7px 12px #fff,inset 0 -9px 16px rgba(201,139,78,.2),0 14px 28px rgba(90,59,44,.12)}
+.puff.soft::after{border-color:rgba(201,139,78,.38)}
+.puff.big{padding:24px clamp(28px,6vw,58px);font-size:clamp(21px,3.4vw,32px);max-width:100%}
+.puff:focus-visible,.shutter:focus-visible{outline:4px solid var(--caramel);outline-offset:5px}
+.puff svg{width:1.1em;height:1.1em;flex:none}
+.puff:disabled{opacity:.55;cursor:default}
+
+/* Home: plush camera */
+.plush-stage{display:flex;flex-direction:column;align-items:center}
+.plush-wrap{width:min(300px,34vh,62vw);transform-origin:50% 100%;cursor:pointer;will-change:transform}
+.plush-wrap svg{display:block;width:100%;height:auto;overflow:visible}
+.breathe{animation:breathe 3.8s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(.985,1.025)}}
+.eyes{animation:blink 5.5s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.12)}}
+.ground{width:min(190px,22vh,40vw);height:16px;margin-top:-8px;border-radius:50%;background:rgba(90,59,44,.12);filter:blur(4px)}
+
+/* Camera */
+.screen[data-screen="camera"]{gap:12px;padding-block:8px 14px}
+.cam-head{font-size:clamp(20px,3.4vw,34px);line-height:1.1;min-height:1.1em}
+.vf-box{flex:1;min-height:0;width:100%;container-type:size;display:flex;align-items:center;justify-content:center}
+.vf{
+  position:relative;max-width:100%;
+  width:min(calc(100cqw - 24px),calc(100cqh - 24px));
+  height:min(calc(100cqh - 24px),calc((100cqw - 24px) / .56));
+  border-radius:clamp(34px,5vw,58px);overflow:hidden;background:var(--milk);
+  box-shadow:0 0 0 12px var(--paper),0 22px 46px rgba(90,59,44,.2);
+  -webkit-mask-image:-webkit-radial-gradient(white,black);will-change:transform;
+}
+.vf::after{content:"";position:absolute;inset:12px;z-index:5;pointer-events:none;
+  border-radius:clamp(24px,4vw,46px);border:3px dashed rgba(255,251,245,.75)}
+.vf video,.vf canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vf video{transform:scaleX(-1);opacity:0;transition:opacity .7s ease}
+.vf[data-mode="live"] video{opacity:1}
+.vf canvas.demo{display:none}
+.vf[data-mode="demo"] canvas.demo{display:block}
+
+.loading{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--cocoa-soft);font-weight:800;font-size:18px}
+.vf[data-mode="loading"] .loading{display:flex}
+.dots{display:flex;gap:10px}
+.dots i{width:16px;height:16px;border-radius:50%;background:var(--rose);animation:hop 1.2s ease-in-out infinite}
+.dots i:nth-child(2){animation-delay:.15s;background:var(--caramel)}
+.dots i:nth-child(3){animation-delay:.3s}
+@keyframes hop{0%,100%{transform:translateY(0) scale(1,1)}40%{transform:translateY(-12px) scale(.9,1.1)}60%{transform:translateY(0) scale(1.15,.85)}}
+
+.notice{position:absolute;left:22px;right:22px;top:22px;z-index:6;display:none;
+  flex-direction:column;align-items:center;gap:8px;padding:10px 14px;border-radius:22px;
+  background:rgba(255,251,245,.9);color:var(--cocoa);font-size:13px;line-height:1.35;font-weight:700}
+.vf[data-mode="demo"] .notice{display:flex}
+.notice .puff{font-size:14px;padding:8px 16px}
+.notice .puff::after{inset:4px;border-width:2px}
+
+.count{position:absolute;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.candy{
+  width:clamp(130px,26cqw,220px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 35% 30%,#F6C2BE 0 18%,var(--rose) 55%,var(--rose-deep) 100%);
+  color:var(--paper);font-weight:900;font-size:clamp(78px,15cqw,140px);line-height:1;
+  box-shadow:inset 0 -10px 18px rgba(150,72,64,.3),0 18px 34px rgba(90,59,44,.25);
+  text-shadow:0 4px 0 rgba(150,72,64,.25);will-change:transform;
+}
+.flash{position:absolute;inset:0;z-index:7;background:var(--paper);opacity:0;pointer-events:none}
+.flash.go{animation:flash .75s ease-out}
+@keyframes flash{0%{opacity:0}16%{opacity:.94}100%{opacity:0}}
+
+.controls{width:100%;max-width:580px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+.controls .back{justify-self:start}
+.controls .timer{justify-self:end}
+.round{width:68px;height:68px;padding:0;border-radius:50%}
+.round::after{inset:6px}
+.timer{padding:14px 20px;font-size:18px;gap:8px;flex-direction:column;line-height:1}
+.timer .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.08em;opacity:.75}
+.timer .val{display:flex;align-items:center;gap:6px;font-size:20px;font-variant-numeric:tabular-nums}
+.timer .val svg{width:20px;height:20px}
+.timer.off .val{opacity:.6}
+.shutter{
+  appearance:none;border:0;padding:0;cursor:pointer;position:relative;
+  width:clamp(92px,12vw,116px);aspect-ratio:1;border-radius:50%;background:var(--paper);
+  display:grid;place-items:center;will-change:transform;
+  box-shadow:inset 0 7px 12px #fff,inset 0 -9px 16px rgba(201,139,78,.22),0 16px 30px rgba(90,59,44,.2);
+}
+.shutter .core{
+  width:74%;height:74%;border-radius:50%;background:var(--rose);position:relative;
+  box-shadow:inset 0 6px 10px rgba(255,251,245,.45),inset 0 -8px 14px rgba(150,72,64,.3);
+  transition:width .55s cubic-bezier(.34,1.56,.64,1),height .55s cubic-bezier(.34,1.56,.64,1),border-radius .55s ease,background .4s ease;
+}
+.shutter .core::after{content:"";position:absolute;inset:6px;border-radius:inherit;border:2.5px dashed rgba(255,251,245,.65)}
+.shutter.counting .core{width:42%;height:42%;border-radius:30%;background:var(--cocoa-soft)}
+.shutter.counting .core::after{display:none}
+
+/* Review */
+.polaroid{position:relative;width:min(72vw,40vh,400px);padding:14px 14px 56px;border-radius:32px;background:var(--paper);
+  box-shadow:0 20px 40px rgba(90,59,44,.18);will-change:transform}
+.polaroid img{display:block;width:100%;aspect-ratio:var(--ar,3/4);object-fit:cover;border-radius:22px;background:var(--milk)}
+.polaroid .cap{position:absolute;left:0;right:0;bottom:17px;font-weight:800;font-size:17px;color:var(--caramel-deep)}
+.hint{margin:-6px 0 0;font-size:15px;color:var(--cocoa-soft)}
+.actions{display:flex;flex-wrap:wrap;justify-content:center;gap:16px}
+
+/* Print */
+.printer{--pw:min(300px,60vw,36vh);width:var(--pw);display:flex;flex-direction:column;align-items:center}
+.printer > svg{position:relative;z-index:2;display:block;width:100%;height:auto;overflow:visible;transform-origin:50% 100%;will-change:transform}
+.pbody{transform-box:fill-box;transform-origin:50% 100%}
+.printer.busy .pbody{animation:purr 1.1s ease-in-out infinite}
+@keyframes purr{0%,100%{transform:rotate(-1deg)}50%{transform:rotate(1deg)}}
+.printer.busy .mouth{animation:chew .55s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes chew{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.35)}}
+.paper-win{position:relative;z-index:1;width:54%;margin-top:calc(var(--pw) * -20 / 260);overflow:hidden;aspect-ratio:576/1012}
+.receipt{background:var(--paper);transform:translateY(-101%);transition:transform 2.7s cubic-bezier(.45,.05,.35,1);
+  box-shadow:0 10px 18px rgba(90,59,44,.14);border-radius:0 0 8px 8px}
+.receipt.out{transform:translateY(0)}
+.receipt img{display:block;width:100%;height:auto;mix-blend-mode:multiply}
+
+/* Staff corner: hold the dot to open printer settings */
+.staff-zone{position:absolute;left:0;bottom:0;z-index:3;width:60px;height:60px;display:grid;place-items:center;-webkit-touch-callout:none;cursor:pointer}
+.pdot{width:12px;height:12px;border-radius:50%;background:var(--cocoa-soft);opacity:.45;transition:background .4s,opacity .4s}
+.pdot.ok{background:var(--ok);opacity:.85}
+.pdot.bad{background:var(--bad);opacity:.85}
+.staff{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:rgba(90,59,44,.35);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.staff-card{width:min(440px,100%);background:var(--paper);color:var(--cocoa);border-radius:32px;padding:24px;
+  display:flex;flex-direction:column;gap:14px;text-align:left;box-shadow:0 24px 50px rgba(90,59,44,.25);-webkit-user-select:text;user-select:text}
+.staff-card h3{margin:0;font-weight:900;font-size:22px}
+.staff-card p{margin:0;font-size:15px;line-height:1.45;color:var(--cocoa-soft)}
+.staff-card #btStatus{color:var(--cocoa);font-weight:800}
+.staff-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;font-size:16px}
+.staff-row select{min-width:0;max-width:100%}
+.staff-card select{font:inherit;font-weight:700;padding:10px 14px;border-radius:14px;border:2px solid var(--milk);background:var(--cream);color:var(--cocoa)}
+.staff-btns{display:flex;flex-wrap:wrap;gap:10px}
+.staff-card .puff{font-size:17px;padding:12px 22px}
+.staff-card .puff::after{inset:4px;border-width:2px}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+}
+</style>
+
+<div class="bg" aria-hidden="true"><i></i><i></i></div>
+
+<div class="app">
+
+  <!-- 1. Lure: never dims -->
+  <section class="screen active" data-screen="home" aria-label="Главный экран">
+    <div class="plush-stage">
+      <div class="plush-wrap" id="plush" role="img" aria-label="Плюшевый фотоаппарат">
+        <svg class="breathe" viewBox="0 0 240 230" aria-hidden="true">
+          <ellipse cx="22" cy="140" rx="15" ry="26" fill="#CF7E7A"/>
+          <ellipse cx="218" cy="140" rx="15" ry="26" fill="#CF7E7A"/>
+          <ellipse cx="82" cy="210" rx="24" ry="13" fill="#CF7E7A"/>
+          <ellipse cx="158" cy="210" rx="24" ry="13" fill="#CF7E7A"/>
+          <rect x="72" y="26" width="66" height="44" rx="20" fill="#C98B4E"/>
+          <rect x="80" y="34" width="50" height="13" rx="6.5" fill="#FFFBF5" opacity=".35"/>
+          <ellipse cx="176" cy="50" rx="16" ry="11" fill="#C98B4E"/>
+          <rect x="22" y="56" width="196" height="152" rx="66" fill="#E9A19D"/>
+          <rect x="34" y="68" width="172" height="128" rx="56" fill="none" stroke="#FFFBF5" stroke-opacity=".75" stroke-width="3" stroke-dasharray="1 10" stroke-linecap="round"/>
+          <ellipse cx="90" cy="84" rx="40" ry="11" fill="#FFFBF5" opacity=".28"/>
+          <circle cx="170" cy="100" r="20" fill="#FFFBF5"/>
+          <circle cx="170" cy="100" r="13" fill="#5A3B2C"/>
+          <circle cx="165" cy="95" r="4" fill="#FFFBF5"/>
+          <g class="eyes">
+            <ellipse cx="92" cy="134" rx="8" ry="10" fill="#5A3B2C"/>
+            <ellipse cx="148" cy="134" rx="8" ry="10" fill="#5A3B2C"/>
+          </g>
+          <ellipse cx="74" cy="155" rx="13" ry="8" fill="#D9736E" opacity=".45"/>
+          <ellipse cx="166" cy="155" rx="13" ry="8" fill="#D9736E" opacity=".45"/>
+          <path d="M108 151 Q120 163 132 151" stroke="#5A3B2C" stroke-width="5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="ground" aria-hidden="true"></div>
+    </div>
+    <h1>Забери свой кадр!</h1>
+    <p class="lead">Сфотографируйся, и через пару секунд снимок выйдет из нашего принтера.</p>
+    <button class="puff big" id="take" type="button" data-squish>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.7l1.3-2h5l1.3 2h1.7A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.5" r="3.4"/></svg>
+      Сфотографироваться
+    </button>
+    <p class="note">Фото нигде не сохраняется, мы его только печатаем</p>
+    <div class="staff-zone" id="staffZone" aria-label="Настройки принтера: удерживайте"><span class="pdot" id="pdot"></span></div>
+  </section>
+
+  <!-- 2. Camera with live viewfinder -->
+  <section class="screen" data-screen="camera" aria-label="Камера">
+    <p class="cam-head" id="camHead" aria-live="polite">Посмотри в камеру</p>
+    <div class="vf-box">
+      <div class="vf" id="vf">
+        <video id="video" playsinline muted autoplay></video>
+        <canvas class="demo" id="demo" width="600" height="800"></canvas>
+        <div class="loading"><div class="dots"><i></i><i></i><i></i></div>Включаем камеру…</div>
+        <div class="count" id="count" hidden><div class="candy" id="candy">3</div></div>
+        <div class="flash" id="flash"></div>
+        <div class="notice">
+          <span>Демо: камера в этом окне не включилась. На планшете здесь будет живое видео.</span>
+          <button class="puff soft" id="sysCam" type="button">Снять системной камерой</button>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="puff soft round back" id="back" type="button" aria-label="На главный экран" data-squish>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg>
+      </button>
+      <button class="shutter" id="shutter" type="button" aria-label="Сделать снимок" data-squish><span class="core"></span></button>
+      <button class="puff soft timer" id="timer" type="button" data-squish>
+        <span class="lbl">Таймер</span>
+        <span class="val"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13.5" r="7"/><path d="M12 10v3.5l2.2 1.6M10 3.5h4"/></svg><span id="timerVal">3 с</span></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- 3. Like it or not -->
+  <section class="screen" data-screen="review" aria-label="Выбор снимка">
+    <h2>Нравится?</h2>
+    <div class="polaroid" id="polaroid">
+      <img id="shotImg" alt="Твой снимок">
+      <div class="cap" id="polCap"></div>
+    </div>
+    <p class="hint">Напечатаем в чёрно-белом, как ретро-открытку</p>
+    <div class="actions">
+      <button class="puff" id="like" type="button" data-squish>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20.5s-7.5-4.4-7.5-10.1A4.4 4.4 0 0 1 12 7.6a4.4 4.4 0 0 1 7.5 2.8c0 5.7-7.5 10.1-7.5 10.1z"/></svg>
+        Нравится, печатаем
+      </button>
+      <button class="puff soft" id="again" type="button" data-squish>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.4-5.5M4.5 4.5v4h4"/></svg>
+        Ещё раз
+      </button>
+    </div>
+  </section>
+
+  <!-- 4. Printing -->
+  <section class="screen" data-screen="print" aria-label="Печать">
+    <h2 id="status" aria-live="polite">Печатаем…</h2>
+    <p class="lead" id="statusSub"></p>
+    <div class="printer" id="printer">
+      <svg id="printerSvg" viewBox="0 0 260 124" aria-hidden="true">
+        <g class="pbody">
+          <rect x="14" y="8" width="232" height="104" rx="46" fill="#C98B4E"/>
+          <rect x="26" y="20" width="208" height="80" rx="36" fill="none" stroke="#FFFBF5" stroke-opacity=".65" stroke-width="3" stroke-dasharray="1 10" stroke-linecap="round"/>
+          <ellipse cx="84" cy="30" rx="36" ry="8" fill="#FFFBF5" opacity=".25"/>
+          <g class="eyes">
+            <ellipse cx="100" cy="56" rx="7" ry="9" fill="#5A3B2C"/>
+            <ellipse cx="160" cy="56" rx="7" ry="9" fill="#5A3B2C"/>
+          </g>
+          <ellipse cx="80" cy="73" rx="11" ry="7" fill="#E9A19D" opacity=".85"/>
+          <ellipse cx="180" cy="73" rx="11" ry="7" fill="#E9A19D" opacity=".85"/>
+          <path class="mouth" d="M120 70 Q130 80 140 70" stroke="#5A3B2C" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+          <rect x="54" y="98" width="152" height="12" rx="6" fill="#5A3B2C"/>
+        </g>
+      </svg>
+      <div class="paper-win" id="paperWin">
+        <div class="receipt" id="receipt"><img id="receiptImg" alt="Распечатка снимка"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Staff settings -->
+  <div class="staff" id="staff" hidden>
+    <div class="staff-card" role="dialog" aria-labelledby="staffTitle">
+      <h3 id="staffTitle">Принтер</h3>
+      <p id="btStatus">Принтер не подключён</p>
+      <p>Включите принтер, нажмите «Подключить» и выберите его в списке. Делать это нужно после каждого перезапуска страницы, если принтер не подхватился сам.</p>
+      <div class="staff-row"><label for="pwSel">Ширина ленты</label>
+        <select id="pwSel"><option value="384">57 мм (384 точки)</option><option value="576">80 мм (576 точек)</option></select></div>
+      <div class="staff-row"><label for="protoSel">Протокол</label>
+        <select id="protoSel"><option value="auto">Определить самому</option><option value="cat">Мини-принтер (Fun Print и подобные)</option><option value="escpos">ESC/POS (Phomemo, чековые)</option></select></div>
+      <div class="staff-btns">
+        <button class="puff" id="btPair" type="button">Подключить</button>
+        <button class="puff soft" id="btTest" type="button">Тестовая печать</button>
+        <button class="puff soft" id="staffClose" type="button">Закрыть</button>
+      </div>
+      <p id="appVer"></p>
+    </div>
+  </div>
+
+  <input type="file" id="fileInput" accept="image/*" capture="user" hidden>
+</div>
+
+<script>
+/* ===== Settings for the cafe ===== */
+const APP_VERSION = '1.0';
+const CONFIG = {
+  cafeName: 'Ваша кофейня',        // printed at the top of the receipt
+  handleLabel: 'Мы в сети',        // line above the handle, no platform named
+  handle: '@vasha_kofeynya',       // the cafe's page
+  thanks: 'Спасибо, что заглянули!',
+  printUrl: null,                  // optional network print server instead of Bluetooth
+  printWidth: 384,                 // dots across: 384 for 57 mm mini printers, 576 for 80 mm
+  catEnergy: 0x3000,               // darkness for mini printers: 0x2000 lighter, 0x6000 darker
+  btChunk: 100,                    // bytes per Bluetooth write
+  btDelay: 12,                     // ms between writes; raise it if the printer skips lines
+  fullscreen: true,                // go fullscreen on the tablet after the first tap
+  defaultTimer: 3,                 // seconds: 0, 3, 5 or 10
+  backHomeAfterPrintMs: 3200,
+  idleMs: 60000,                   // return home if nobody touches the screen
+  sound: true
+};
+
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = s => document.querySelector(s);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+/* ===== Plush physics: a damped spring per property ===== */
+class Jelly{
+  constructor(el, o = {}){
+    this.el = el; this.k = o.k ?? 240; this.c = o.c ?? 13; this.base = o.base || '';
+    this.s = {y:0, rot:0, sq:0, sc:1, ...(o.init || {})};
+    this.t = {...this.s};
+    this.v = {y:0, rot:0, sq:0, sc:0};
+    this.on = false; this.tick = this.tick.bind(this); this.render();
+  }
+  to(p){ Object.assign(this.t, p); return this.wake(); }
+  jump(p){ Object.assign(this.s, p); return this.wake(); }
+  push(p){ for (const k in p) this.v[k] += p[k]; return this.wake(); }
+  wake(){
+    if (REDUCED){ Object.assign(this.s, this.t); for (const k in this.v) this.v[k] = 0; this.render(); return this; }
+    if (!this.on){ this.on = true; this.last = performance.now(); requestAnimationFrame(this.tick); }
+    return this;
+  }
+  tick(now){
+    const dt = Math.min(.034, (now - this.last) / 1000); this.last = now;
+    const n = 6, h = dt / n; let moving = false;
+    for (const key in this.s){
+      let x = this.s[key], v = this.v[key]; const t = this.t[key];
+      for (let i = 0; i < n; i++){ const a = -this.k * (x - t) - this.c * v; v += a * h; x += v * h; }
+      if (Math.abs(v) < .003 && Math.abs(x - t) < .0008){ x = t; v = 0; } else moving = true;
+      this.s[key] = x; this.v[key] = v;
+    }
+    this.render();
+    if (moving) requestAnimationFrame(this.tick); else this.on = false;
+  }
+  render(){
+    const {y, rot, sq, sc} = this.s;
+    const sx = (1 + sq * .1) * sc, sy = (1 - sq * .1) * sc;
+    this.el.style.transform = `${this.base} translateY(${y.toFixed(2)}px) rotate(${rot.toFixed(2)}deg) scale(${sx.toFixed(4)},${sy.toFixed(4)})`;
+  }
+}
+
+// Every stuffed button squishes under the finger and wobbles back
+document.querySelectorAll('[data-squish]').forEach(el => {
+  const j = new Jelly(el, {k:320, c:11});
+  el._jelly = j;
+  el.addEventListener('pointerdown', () => { if (!el.disabled) j.to({sq:.9, sc:.95}); });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(e => el.addEventListener(e, () => j.to({sq:0, sc:1})));
+});
+
+/* ===== Soft sounds ===== */
+let ac = null;
+function audio(){
+  if (!CONFIG.sound) return null;
+  try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === 'suspended') ac.resume(); } catch { return null; }
+  return ac;
+}
+function boop(f = 600, d = .16, vol = .06, type = 'sine'){
+  const a = audio(); if (!a) return;
+  const o = a.createOscillator(), g = a.createGain(), t = a.currentTime;
+  o.type = type; o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * 1.25, t + d);
+  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+  o.connect(g).connect(a.destination); o.start(t); o.stop(t + d + .03);
+}
+
+/* ===== Screens ===== */
+const screens = [...document.querySelectorAll('.screen')];
+let state = 'home';
+let pending = [];
+const later = (fn, ms) => pending.push(setTimeout(fn, ms));
+const clearLater = () => { pending.forEach(clearTimeout); pending = []; };
+
+function go(name){
+  state = name;
+  screens.forEach(s => s.classList.toggle('active', s.dataset.screen === name));
+  resetIdle();
+}
+
+/* ===== Keep the screen awake ===== */
+let wake = null;
+async function keepAwake(){
+  try {
+    if ('wakeLock' in navigator && !wake && document.visibilityState === 'visible'){
+      wake = await navigator.wakeLock.request('screen');
+      wake.addEventListener('release', () => { wake = null; });
+    }
+  } catch {}
+}
+keepAwake();
+document.addEventListener('pointerdown', keepAwake);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') keepAwake();
+  else if (state === 'camera' || state === 'review') goHome();
+});
+
+/* ===== Idle: back to the lure ===== */
+let idleT = 0;
+function resetIdle(){
+  clearTimeout(idleT);
+  if (state === 'camera' || state === 'review'){
+    idleT = setTimeout(() => { if (counting) resetIdle(); else goHome(); }, CONFIG.idleMs);
+  }
+}
+document.addEventListener('pointerdown', resetIdle, true);
+
+/* ===== Home ===== */
+const plush = $('#plush');
+const plushJelly = new Jelly(plush, {k:200, c:9});
+plush.addEventListener('pointerdown', () => {
+  plushJelly.push({rot:(Math.random() < .5 ? -1 : 1) * 240, sq:9});
+  boop(520 + Math.random() * 160, .14, .05);
+});
+setInterval(() => {
+  if (state === 'home' && document.visibilityState === 'visible') plushJelly.push({y:-480, sq:-8});
+}, 7000);
+
+$('#take').addEventListener('click', openCamera);
+
+/* ===== Camera ===== */
+const vf = $('#vf'), video = $('#video'), demo = $('#demo'), dctx = demo.getContext('2d');
+const camHead = $('#camHead'), shutter = $('#shutter'), timerBtn = $('#timer'), timerVal = $('#timerVal');
+const countEl = $('#count'), candy = $('#candy'), flash = $('#flash');
+const vfJelly = new Jelly(vf, {k:260, c:12});
+const candyJelly = new Jelly(candy, {k:280, c:12});
+
+let stream = null, mode = null, starting = false, demoRaf = 0;
+
+function openCamera(){
+  audio(); keepAwake();
+  camHead.textContent = 'Посмотри в камеру';
+  go('camera');
+  startCamera();
+}
+
+async function startCamera(){
+  if (mode || starting) return;
+  starting = true; vf.dataset.mode = 'loading';
+  let gum = null;
+  try {
+    if (!navigator.mediaDevices?.getUserMedia) throw new Error('no camera api');
+    gum = navigator.mediaDevices.getUserMedia({video:{facingMode:'user', width:{ideal:1280}, height:{ideal:960}}, audio:false});
+    const s = await Promise.race([gum, wait(8000).then(() => { throw new Error('timeout'); })]);
+    if (state !== 'camera' && state !== 'review'){ s.getTracks().forEach(t => t.stop()); return; }
+    stream = s; video.srcObject = s;
+    await video.play().catch(() => {});
+    mode = 'live'; vf.dataset.mode = 'live';
+  } catch {
+    if (state === 'camera'){ mode = 'demo'; vf.dataset.mode = 'demo'; startDemo(); }
+    else vf.dataset.mode = '';
+  } finally {
+    starting = false;
+    gum?.then(s => { if (s !== stream) s.getTracks().forEach(t => t.stop()); }).catch(() => {});
+  }
+}
+
+function stopCamera(){
+  mode = null;
+  if (stream){ stream.getTracks().forEach(t => t.stop()); stream = null; }
+  video.srcObject = null;
+  cancelAnimationFrame(demoRaf); demoRaf = 0;
+  vf.dataset.mode = '';
+}
+
+// Demo picture for windows where the camera is refused (like the artifact preview)
+function startDemo(){
+  const loop = t => { drawDemo(t); demoRaf = requestAnimationFrame(loop); };
+  demoRaf = requestAnimationFrame(loop);
+}
+function drawDemo(t){
+  const W = demo.width, H = demo.height, x = dctx;
+  const g = x.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#F9E6D3'); g.addColorStop(1, '#F0C6B4');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  for (let i = 0; i < 8; i++){
+    const px = ((i * .137 + t * .000015 * (1 + i % 3)) % 1) * W * 1.2 - W * .1;
+    const py = H * (.08 + ((i * .29) % 1) * .45);
+    x.fillStyle = 'rgba(255,251,245,.42)';
+    x.beginPath(); x.arc(px, py, 26 + (i % 4) * 14, 0, Math.PI * 2); x.fill();
+  }
+  const sway = Math.sin(t / 1100) * 16, bob = Math.sin(t / 700) * 5, cx = W / 2;
+  x.fillStyle = '#C98B4E'; x.beginPath(); x.ellipse(cx + sway * .35, H * 1.05, W * .44, H * .3, 0, 0, Math.PI * 2); x.fill();
+  x.fillStyle = '#E8B597'; x.fillRect(cx + sway * .5 - W * .07, H * .6, W * .14, H * .18);
+  x.fillStyle = '#FFFBF5'; x.beginPath(); x.ellipse(cx + sway * .4, H * .78, W * .14, H * .03, 0, 0, Math.PI * 2); x.fill();
+  const hx = cx + sway, hy = H * .47 + bob, r = W * .21;
+  x.fillStyle = '#5A3B2C'; x.beginPath(); x.arc(hx, hy - r * .08, r * 1.1, 0, Math.PI * 2); x.fill();
+  x.fillStyle = '#EDBE9F'; x.beginPath(); x.ellipse(hx, hy + r * .06, r * .92, r, 0, 0, Math.PI * 2); x.fill();
+  x.fillStyle = '#5A3B2C'; x.beginPath(); x.ellipse(hx - r * .25, hy - r * .62, r * .75, r * .42, -.35, 0, Math.PI * 2); x.fill();
+  const blink = (t % 4200) < 140 ? .15 : 1;
+  for (const s of [-1, 1]){
+    x.fillStyle = '#5A3B2C'; x.beginPath(); x.ellipse(hx + s * r * .36, hy + r * .12, r * .075, r * .095 * blink, 0, 0, Math.PI * 2); x.fill();
+    x.fillStyle = 'rgba(233,161,157,.7)'; x.beginPath(); x.ellipse(hx + s * r * .56, hy + r * .38, r * .14, r * .09, 0, 0, Math.PI * 2); x.fill();
+  }
+  x.strokeStyle = '#5A3B2C'; x.lineWidth = r * .07; x.lineCap = 'round';
+  x.beginPath(); x.arc(hx, hy + r * .34, r * .2, .15 * Math.PI, .85 * Math.PI); x.stroke();
+}
+
+/* Timer */
+const TIMERS = [0, 3, 5, 10];
+let timerSec = TIMERS.includes(CONFIG.defaultTimer) ? CONFIG.defaultTimer : 3;
+function renderTimer(){
+  timerVal.textContent = timerSec ? `${timerSec} с` : 'выкл';
+  timerBtn.classList.toggle('off', !timerSec);
+  timerBtn.setAttribute('aria-label', timerSec ? `Таймер ${timerSec} секунд, нажми чтобы сменить` : 'Таймер выключен, нажми чтобы включить');
+}
+renderTimer();
+timerBtn.addEventListener('click', () => {
+  if (counting) return;
+  timerSec = TIMERS[(TIMERS.indexOf(timerSec) + 1) % TIMERS.length];
+  renderTimer(); timerBtn._jelly.push({rot:220}); boop(480, .08, .04);
+});
+
+/* Shutter + countdown */
+let counting = false, countTimers = [];
+shutter.addEventListener('click', () => {
+  if (state !== 'camera' || !mode) return;
+  if (counting){ cancelCount(); return; }
+  if (timerSec === 0) shoot(); else countdown(timerSec);
+});
+function countdown(n){
+  counting = true;
+  shutter.classList.add('counting'); shutter.setAttribute('aria-label', 'Остановить таймер');
+  timerBtn.disabled = true;
+  camHead.textContent = 'Приготовься…';
+  for (let i = 0; i < n; i++) countTimers.push(setTimeout(() => showDigit(n - i), i * 1000));
+  countTimers.push(setTimeout(() => { endCount(); shoot(); }, n * 1000));
+}
+function showDigit(d){
+  countEl.hidden = false; candy.textContent = d;
+  candyJelly.jump({sc:.35, sq:-3}).to({sc:1, sq:0});
+  boop(d === 1 ? 720 : 560, .14);
+  if (d === 1) camHead.textContent = 'Улыбаемся!';
+}
+function endCount(){
+  counting = false; countTimers.forEach(clearTimeout); countTimers = [];
+  countEl.hidden = true;
+  shutter.classList.remove('counting'); shutter.setAttribute('aria-label', 'Сделать снимок');
+  timerBtn.disabled = false;
+}
+function cancelCount(){ endCount(); camHead.textContent = 'Посмотри в камеру'; }
+
+/* Capture */
+const shot = document.createElement('canvas'); shot.width = 900; shot.height = 1200;
+const sctx = shot.getContext('2d');
+function cover(sw, sh, tw, th){
+  const sr = sw / sh, tr = tw / th;
+  if (sr > tr){ const w = sh * tr; return {sx:(sw - w) / 2, sy:0, sw:w, sh}; }
+  const h = sw / tr; return {sx:0, sy:(sh - h) / 2, sw, sh:h};
+}
+// The shot keeps the viewfinder's shape, so the print matches what the guest saw
+function sizeShot(){
+  const r = Math.min(1, Math.max(.56, (vf.clientWidth || 3) / (vf.clientHeight || 4)));
+  shot.width = 900; shot.height = Math.round(900 / r);
+}
+function grab(){
+  sizeShot();
+  if (mode === 'live' && video.videoWidth){
+    const c = cover(video.videoWidth, video.videoHeight, shot.width, shot.height);
+    sctx.save(); sctx.translate(shot.width, 0); sctx.scale(-1, 1);
+    sctx.drawImage(video, c.sx, c.sy, c.sw, c.sh, 0, 0, shot.width, shot.height);
+    sctx.restore(); return true;
+  }
+  if (mode === 'demo'){
+    const c = cover(demo.width, demo.height, shot.width, shot.height);
+    sctx.drawImage(demo, c.sx, c.sy, c.sw, c.sh, 0, 0, shot.width, shot.height); return true;
+  }
+  return false;
+}
+function shoot(){
+  if (!grab()) return;
+  flash.classList.remove('go'); void flash.offsetWidth; flash.classList.add('go');
+  vfJelly.push({sq:9});
+  boop(880, .12, .06, 'triangle');
+  camHead.textContent = 'Чииз!';
+  later(showReview, 650);
+}
+
+// Fallback: the phone's own camera app
+const fileInput = $('#fileInput');
+$('#sysCam').addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', async () => {
+  const f = fileInput.files[0]; fileInput.value = '';
+  if (!f) return;
+  const url = URL.createObjectURL(f);
+  const img = new Image();
+  img.onload = () => {
+    shot.width = 900; shot.height = 1200;
+    const c = cover(img.naturalWidth, img.naturalHeight, shot.width, shot.height);
+    sctx.drawImage(img, c.sx, c.sy, c.sw, c.sh, 0, 0, shot.width, shot.height);
+    URL.revokeObjectURL(url);
+    showReview();
+  };
+  img.src = url;
+});
+
+/* ===== Review ===== */
+const polaroid = $('#polaroid'), shotImg = $('#shotImg'), polCap = $('#polCap');
+const polJelly = new Jelly(polaroid, {k:190, c:11, init:{rot:-2.5}});
+const fmtDate = () => new Intl.DateTimeFormat('ru-RU', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}).format(new Date()).replace(', ', ' · ');
+
+function showReview(){
+  shotImg.src = shot.toDataURL('image/jpeg', .9);
+  polCap.textContent = `${CONFIG.cafeName} · ${fmtDate().slice(0, 5)}`;
+  const ar = shot.width / shot.height;
+  polaroid.style.setProperty('--ar', `${shot.width}/${shot.height}`);
+  polaroid.style.width = `min(72vw, 400px, ${(46 * ar).toFixed(1)}vh)`;
+  go('review');
+  polJelly.jump({y:-90, rot:-12, sq:-3, sc:.9}).to({y:0, rot:-2.5, sq:0, sc:1});
+}
+$('#again').addEventListener('click', () => {
+  polJelly.push({rot:-420});
+  boop(420, .12, .04);
+  later(() => {
+    camHead.textContent = 'Посмотри в камеру';
+    go('camera');
+    if (!mode) startCamera();
+  }, 420);
+});
+$('#like').addEventListener('click', doPrint);
+
+/* ===== Receipt for a 80 mm thermal printer: 576 dots wide, 1-bit ===== */
+function ditherPhoto(src, W, H){
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  const cv = cover(src.width, src.height, W, H);
+  x.drawImage(src, cv.sx, cv.sy, cv.sw, cv.sh, 0, 0, W, H);
+  const img = x.getImageData(0, 0, W, H), d = img.data, n = W * H;
+  const g = new Float32Array(n), hist = new Uint32Array(256);
+  for (let i = 0; i < n; i++){
+    const v = .299 * d[i * 4] + .587 * d[i * 4 + 1] + .114 * d[i * 4 + 2];
+    g[i] = v; hist[v | 0]++;
+  }
+  // stretch levels (2% / 98%) and lift shadows: thermal paper prints dark
+  let lo = 0, hi = 255, acc = 0;
+  for (let v = 0; v < 256; v++){ acc += hist[v]; if (acc > n * .02){ lo = v; break; } }
+  acc = 0;
+  for (let v = 255; v >= 0; v--){ acc += hist[v]; if (acc > n * .02){ hi = v; break; } }
+  const span = Math.max(1, hi - lo);
+  for (let i = 0; i < n; i++){
+    let t = (g[i] - lo) / span; t = t < 0 ? 0 : t > 1 ? 1 : t;
+    g[i] = Math.pow(t, .8) * 255;
+  }
+  // Atkinson dithering
+  const add = (xx, yy, e) => { if (xx >= 0 && xx < W && yy < H) g[yy * W + xx] += e; };
+  for (let y = 0; y < H; y++) for (let xx = 0; xx < W; xx++){
+    const i = y * W + xx, old = g[i], nv = old < 128 ? 0 : 255, e = (old - nv) / 8;
+    g[i] = nv;
+    add(xx + 1, y, e); add(xx + 2, y, e); add(xx - 1, y + 1, e); add(xx, y + 1, e); add(xx + 1, y + 1, e); add(xx, y + 2, e);
+  }
+  for (let i = 0; i < n; i++){ d[i * 4] = d[i * 4 + 1] = d[i * 4 + 2] = g[i]; d[i * 4 + 3] = 255; }
+  x.putImageData(img, 0, 0);
+  return c;
+}
+
+async function buildReceipt(src){
+  try { await Promise.all([document.fonts.load('900 40px Nunito'), document.fonts.load('700 24px Nunito')]); } catch {}
+  // Laid out for 576 dots, scaled to the printer's real width
+  const W = printWidth(), S = W / 576, R = v => Math.round(v * S);
+  const PX = R(24), PY = R(140), PW = W - 2 * PX;
+  const PH = Math.min(Math.round(PW * 1.78), Math.max(PW, Math.round(PW * src.height / src.width)));
+  const H = PY + PH + R(168), FY = PY + PH;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
+  x.fillStyle = '#000'; x.strokeStyle = '#000'; x.textAlign = 'center';
+  const fit = (txt, font, max) => { x.font = font; let s = 1; const w = x.measureText(txt).width; if (w > max) s = max / w; return s; };
+  const text = (txt, weight, size, y) => {
+    const px = size * S;
+    const s = fit(txt, `${weight} ${px}px Nunito, sans-serif`, W - 2 * PX);
+    x.font = `${weight} ${Math.floor(px * s)}px Nunito, sans-serif`;
+    x.fillText(txt, W / 2, y);
+  };
+  text(CONFIG.cafeName.toUpperCase(), 900, 42, R(72));
+  text(fmtDate(), 700, 24, R(108));
+  x.lineWidth = Math.max(2, R(3)); x.setLineDash([R(10), R(10)]);
+  x.beginPath(); x.moveTo(PX, R(124)); x.lineTo(W - PX, R(124)); x.stroke();
+  // photo with soft corners
+  const p = ditherPhoto(src, PW, PH), r = R(28);
+  x.save(); x.beginPath();
+  x.moveTo(PX + r, PY); x.arcTo(PX + PW, PY, PX + PW, PY + PH, r); x.arcTo(PX + PW, PY + PH, PX, PY + PH, r);
+  x.arcTo(PX, PY + PH, PX, PY, r); x.arcTo(PX, PY, PX + PW, PY, r); x.closePath(); x.clip();
+  x.drawImage(p, PX, PY); x.restore();
+  text(CONFIG.thanks, 900, 34, FY + R(50));
+  text(CONFIG.handleLabel, 700, 24, FY + R(86));
+  text(CONFIG.handle, 900, 36, FY + R(130));
+  x.setLineDash([R(4), R(12)]); x.beginPath(); x.moveTo(R(12), H - R(10)); x.lineTo(W - R(12), H - R(10)); x.stroke();
+  // everything to pure 1-bit, like the printer will do
+  const img = x.getImageData(0, 0, W, H), d = img.data;
+  for (let i = 0; i < d.length; i += 4){ const v = d[i] < 128 ? 0 : 255; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+  x.putImageData(img, 0, 0);
+  return c;
+}
+
+/* ===== Bluetooth printing (Chrome on Android) ===== */
+const BT_PROFILES = [
+  {kind:'cat',    service:0xae30, char:0xae01, notify:0xae02},
+  {kind:'escpos', service:0xff00, char:0xff02},
+  {kind:'escpos', service:0x18f0, char:0x2af1},
+  {kind:'escpos', service:'49535343-fe7d-4ae5-8fa9-9fafd205e455', char:'49535343-8841-43f4-a8d4-ecbe34729bb3'},
+  {kind:'escpos', service:'e7810a71-73ae-499d-8c15-faa9aef0c3f2', char:'bef8d6c9-9c21-4c9e-b632-bd58c1009f9f'}
+];
+const bt = {device:null, ch:null, kind:null, paused:false, busy:false, retry:0};
+const btUsable = !!navigator.bluetooth && !(document.featurePolicy && !document.featurePolicy.allowsFeature('bluetooth'));
+const prefs = {width:CONFIG.printWidth, protocol:'auto', printerName:''};
+try { Object.assign(prefs, JSON.parse(localStorage.getItem('booth-prefs') || '{}')); } catch {}
+function savePrefs(p){ Object.assign(prefs, p); try { localStorage.setItem('booth-prefs', JSON.stringify(prefs)); } catch {} }
+function printWidth(){ return bt.kind === 'cat' ? 384 : (+prefs.width || 384); }
+
+const pdot = $('#pdot'), btStatus = $('#btStatus');
+function setPrinterState(msg){
+  const ok = !!(bt.device && bt.device.gatt.connected && bt.ch);
+  pdot.className = 'pdot' + (ok ? ' ok' : bt.device ? ' bad' : '');
+  btStatus.textContent = msg || (!btUsable ? 'Bluetooth в этом окне недоступен. Откройте страницу в Chrome на планшете.'
+    : ok ? `Подключён: ${bt.device.name || 'принтер'} (${bt.kind === 'cat' ? 'мини-принтер' : 'ESC/POS'})${bt.info ? ' · ' + bt.info : ''}${/ae03/.test(bt.info || '') ? '. Похоже на новую модель: если тест не напечатается, сфотографируйте этот экран.' : ''}`
+    : bt.device ? 'Связь потеряна, переподключаюсь…' : 'Принтер не подключён');
+}
+
+async function btConnect(){
+  const server = await bt.device.gatt.connect();
+  for (const p of BT_PROFILES){
+    if (prefs.protocol !== 'auto' && p.kind !== prefs.protocol) continue;
+    try {
+      const s = await server.getPrimaryService(p.service);
+      const c = await s.getCharacteristic(p.char);
+      bt.ch = c; bt.kind = p.kind; bt.paused = false; bt.retry = 0;
+      try { bt.info = (await s.getCharacteristics()).map(x => x.uuid.slice(4, 8)).join(', '); } catch { bt.info = ''; }
+      if (p.notify){
+        try {
+          const n = await s.getCharacteristic(p.notify);
+          await n.startNotifications();
+          n.addEventListener('characteristicvaluechanged', e => {
+            const v = new Uint8Array(e.target.value.buffer, e.target.value.byteOffset, e.target.value.byteLength);
+            if (v[0] === 0x51 && v[2] === 0xAE) bt.paused = v[6] === 0x10;   // printer asks to slow down
+          });
+        } catch {}
+      }
+      setPrinterState(); return;
+    } catch {}
+  }
+  bt.ch = null; setPrinterState();
+  throw new Error('no-profile');
+}
+function onBtLost(){
+  bt.ch = null; setPrinterState();
+  const again = async () => {
+    if (!bt.device || bt.device.gatt.connected) return;
+    try { await btConnect(); } catch { if (++bt.retry < 40) setTimeout(again, 3000); }
+  };
+  setTimeout(again, 1500);
+}
+async function btPair(){
+  const d = await navigator.bluetooth.requestDevice({acceptAllDevices:true, optionalServices:BT_PROFILES.map(p => p.service)});
+  if (bt.device && bt.device !== d && bt.device.gatt.connected) bt.device.gatt.disconnect();
+  bt.device = d; bt.ch = null;
+  savePrefs({printerName:d.name || ''});
+  d.addEventListener('gattserverdisconnected', onBtLost);
+  setPrinterState('Подключаюсь…');
+  await btConnect();
+}
+// Try the printer allowed last time, without a tap (Chrome remembers it on some versions)
+(async () => {
+  setPrinterState();
+  if (!btUsable || !navigator.bluetooth.getDevices) return;
+  try {
+    const ds = await navigator.bluetooth.getDevices();
+    const d = ds.find(x => x.name && x.name === prefs.printerName) || ds[0];
+    if (!d) return;
+    bt.device = d; d.addEventListener('gattserverdisconnected', onBtLost);
+    await btConnect();
+  } catch { if (bt.device) onBtLost(); }
+})();
+
+async function btWrite(bytes){
+  const ch = bt.ch, quick = ch.properties.writeWithoutResponse && ch.writeValueWithoutResponse;
+  for (let i = 0; i < bytes.length; i += CONFIG.btChunk){
+    for (let w = 0; bt.paused && w < 200; w++) await wait(25);
+    const part = bytes.subarray(i, i + CONFIG.btChunk);
+    if (quick) await ch.writeValueWithoutResponse(part);
+    else if (ch.writeValueWithResponse) await ch.writeValueWithResponse(part);
+    else await ch.writeValue(part);
+    await wait(CONFIG.btDelay);
+  }
+}
+function bitmap(canvas, lsbFirst){
+  const W = canvas.width, H = canvas.height, bw = Math.ceil(W / 8);
+  const d = canvas.getContext('2d').getImageData(0, 0, W, H).data;
+  const rows = [];
+  for (let y = 0; y < H; y++){
+    const line = new Uint8Array(bw);
+    for (let x = 0; x < W; x++) if (d[(y * W + x) * 4] < 128) line[x >> 3] |= lsbFirst ? 1 << (x & 7) : 0x80 >> (x & 7);
+    rows.push(line);
+  }
+  return {rows, bw, H};
+}
+function encodeEscpos(canvas){
+  const {rows, bw, H} = bitmap(canvas, false), out = [0x1B, 0x40, 0x1B, 0x61, 0x01];
+  for (let y0 = 0; y0 < H; y0 += 255){
+    const h = Math.min(255, H - y0);
+    out.push(0x1D, 0x76, 0x30, 0x00, bw & 255, bw >> 8, h & 255, h >> 8);
+    for (let y = y0; y < y0 + h; y++) for (const b of rows[y]) out.push(b);
+  }
+  out.push(0x1B, 0x64, 0x04);
+  return Uint8Array.from(out);
+}
+function crc8(a){ let c = 0; for (const b of a){ c ^= b; for (let i = 0; i < 8; i++) c = c & 0x80 ? ((c << 1) ^ 0x07) & 255 : (c << 1) & 255; } return c; }
+function catCmd(cmd, data){ return [0x51, 0x78, cmd, 0x00, data.length & 255, data.length >> 8, ...data, crc8(data), 0xFF]; }
+function encodeCat(canvas){
+  const {rows} = bitmap(canvas, true), out = [], add = a => { for (const v of a) out.push(v); };
+  const e = CONFIG.catEnergy;
+  add(catCmd(0xA3, [0x00]));                                                    // device state
+  add(catCmd(0xA4, [0x33]));                                                    // quality
+  add(catCmd(0xA6, [0xAA,0x55,0x17,0x38,0x44,0x5F,0x5F,0x5F,0x44,0x38,0x2C]));   // lattice start
+  add(catCmd(0xAF, [e & 255, e >> 8]));                                         // energy (darkness)
+  add(catCmd(0xBE, [0x01]));                                                    // apply energy
+  add(catCmd(0xBD, [0x20]));                                                    // speed
+  for (const line of rows) add(catCmd(0xA2, [...line]));                        // one dot row
+  add(catCmd(0xA1, [0x60, 0x00]));                                              // feed paper out
+  add(catCmd(0xA6, [0xAA,0x55,0x17,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x17]));   // lattice end
+  add(catCmd(0xA3, [0x00]));
+  return Uint8Array.from(out);
+}
+async function btPrint(canvas){
+  if (!bt.device.gatt.connected || !bt.ch) await btConnect();
+  if (bt.busy) throw new Error('busy');
+  bt.busy = true;
+  try { await btWrite(bt.kind === 'cat' ? encodeCat(canvas) : encodeEscpos(canvas)); }
+  finally { bt.busy = false; }
+}
+
+/* Staff panel: hold the dot in the bottom-left corner of the home screen */
+const staff = $('#staff'), staffZone = $('#staffZone'), pwSel = $('#pwSel'), protoSel = $('#protoSel');
+pwSel.value = String(prefs.width); protoSel.value = prefs.protocol;
+let holdT = 0;
+staffZone.addEventListener('pointerdown', () => { holdT = setTimeout(() => { setPrinterState(); staff.hidden = false; }, 1500); });
+['pointerup', 'pointerleave', 'pointercancel'].forEach(e => staffZone.addEventListener(e, () => clearTimeout(holdT)));
+staffZone.addEventListener('contextmenu', e => e.preventDefault());
+// Second way in: hold the plush camera for 3 seconds
+let plushHold = 0;
+plush.addEventListener('pointerdown', () => { plushHold = setTimeout(() => { setPrinterState(); staff.hidden = false; }, 3000); });
+['pointerup', 'pointerleave', 'pointercancel'].forEach(e => plush.addEventListener(e, () => clearTimeout(plushHold)));
+plush.addEventListener('contextmenu', e => e.preventDefault());
+$('#appVer').textContent = `Версия приложения ${APP_VERSION}`;
+$('#staffClose').addEventListener('click', () => { staff.hidden = true; });
+pwSel.addEventListener('change', () => savePrefs({width:+pwSel.value}));
+protoSel.addEventListener('change', () => savePrefs({protocol:protoSel.value}));
+$('#btPair').addEventListener('click', async () => {
+  if (!btUsable){ setPrinterState(); return; }
+  try { await btPair(); }
+  catch (e){
+    setPrinterState(e.message === 'no-profile'
+      ? 'Принтер подключился, но протокол незнакомый. Попробуйте другой протокол выше.'
+      : e.name === 'NotFoundError' ? 'Принтер не выбран' : 'Не получилось подключиться: ' + e.message);
+  }
+});
+$('#btTest').addEventListener('click', async () => {
+  if (!bt.device){ setPrinterState('Сначала подключите принтер'); return; }
+  const c = document.createElement('canvas'); c.width = 900; c.height = 900;
+  const x = c.getContext('2d'), g = x.createLinearGradient(0, 0, 900, 0);
+  g.addColorStop(0, '#000'); g.addColorStop(1, '#fff'); x.fillStyle = g; x.fillRect(0, 0, 900, 900);
+  x.fillStyle = '#fff'; x.beginPath(); x.arc(450, 450, 260, 0, Math.PI * 2); x.fill();
+  x.fillStyle = '#000'; x.font = '900 120px Nunito, sans-serif'; x.textAlign = 'center'; x.fillText('ТЕСТ', 450, 492);
+  setPrinterState('Печатаю тест…');
+  try { await btPrint(await buildReceipt(c)); setPrinterState(); }
+  catch (e){ setPrinterState('Тест не напечатался: ' + e.message); }
+});
+
+// Fullscreen on the tablet after the first tap
+if (CONFIG.fullscreen && btUsable){
+  document.addEventListener('pointerdown', () => {
+    if (!document.fullscreenElement && document.documentElement.requestFullscreen)
+      document.documentElement.requestFullscreen({navigationUI:'hide'}).catch(() => {});
+  });
+}
+
+async function sendToPrinter(canvas){
+  if (bt.device) return btPrint(canvas);
+  if (!CONFIG.printUrl){
+    if (btUsable) throw new Error('printer not connected');
+    return;                                   // preview window: printing is only animated
+  }
+  const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 15000);
+  try {
+    const res = await fetch(CONFIG.printUrl, {method:'POST', body:blob, headers:{'Content-Type':'image/png'}, signal:ctl.signal});
+    if (!res.ok) throw new Error('printer ' + res.status);
+  } finally { clearTimeout(t); }
+}
+
+/* ===== Print ===== */
+const printer = $('#printer'), printerSvg = $('#printerSvg'), receipt = $('#receipt'), receiptImg = $('#receiptImg');
+const status = $('#status'), statusSub = $('#statusSub');
+const printerJelly = new Jelly(printerSvg, {k:200, c:10});
+let printing = false;
+
+function resetReceipt(){
+  receipt.style.transition = 'none'; receipt.classList.remove('out');
+  void receipt.offsetWidth; receipt.style.transition = '';
+}
+
+async function doPrint(){
+  if (printing) return;
+  printing = true;
+  stopCamera();
+  resetReceipt();
+  status.textContent = 'Печатаем…';
+  statusSub.textContent = 'Пара секунд, и снимок твой';
+  go('print');
+  const rc = await buildReceipt(shot);
+  receiptImg.src = rc.toDataURL('image/png');
+  $('#paperWin').style.aspectRatio = `${rc.width}/${rc.height}`;
+  try { await receiptImg.decode(); } catch {}
+  printer.classList.add('busy');
+  requestAnimationFrame(() => requestAnimationFrame(() => receipt.classList.add('out')));
+  const minAnim = wait(REDUCED ? 600 : 2800);
+  let ok = true;
+  try { await Promise.all([sendToPrinter(rc), minAnim]); } catch { ok = false; await minAnim; }
+  printer.classList.remove('busy');
+  if (state !== 'print') return;
+  if (ok){
+    status.textContent = 'Готово! Забирай снимок';
+    statusSub.textContent = CONFIG.thanks;
+    printerJelly.push({y:-380, sq:-8});
+    boop(660, .12); later(() => boop(990, .18), 140);
+    later(goHome, CONFIG.backHomeAfterPrintMs);
+  } else {
+    status.textContent = 'Принтер не отвечает';
+    statusSub.textContent = 'Позови бариста, мы всё поправим';
+    later(goHome, 6000);
+  }
+}
+
+/* ===== Home again ===== */
+function goHome(){
+  clearLater(); endCount(); stopCamera();
+  printing = false;
+  sctx.clearRect(0, 0, shot.width, shot.height);
+  go('home');
+  plushJelly.jump({y:-60, sq:-5}).to({y:0, sq:0});
+  setTimeout(() => {
+    if (state !== 'home') return;
+    shotImg.removeAttribute('src'); receiptImg.removeAttribute('src'); resetReceipt();
+  }, 800);
+}
+$('#back').addEventListener('click', goHome);
+</script>
+
+<script>
+/* Offline: keep the app on the tablet, update quietly when online */
+if ('serviceWorker' in navigator){
+  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); });
+}
+try { navigator.storage && navigator.storage.persist && navigator.storage.persist().catch(() => {}); } catch {}
+</script>
+</body>
+</html>
