@@ -357,6 +357,7 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
       <div class="staff-btns">
         <button class="puff" id="btPair" type="button">Подключить</button>
         <button class="puff soft" id="btTest" type="button">Тестовая печать</button>
+        <button class="puff soft" id="appUpdate" type="button">Обновить приложение</button>
         <button class="puff soft" id="staffClose" type="button">Закрыть</button>
       </div>
       <p id="appVer"></p>
@@ -368,7 +369,7 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
 
 <script>
 /* ===== Settings for the cafe ===== */
-const APP_VERSION = '1.1';
+const APP_VERSION = '1.2';
 const CONFIG = {
   cafeName: 'Ваша кофейня',        // printed at the top of the receipt
   handleLabel: 'Мы в сети',        // line above the handle, no platform named
@@ -808,7 +809,7 @@ async function btConnect(){
       const s = await server.getPrimaryService(p.service);
       const c = await s.getCharacteristic(p.char);
       bt.ch = c; bt.kind = p.kind; bt.paused = false; bt.retry = 0;
-      try { bt.info = (await s.getCharacteristics()).map(x => x.uuid.slice(4, 8)).join(', '); } catch { bt.info = ''; }
+      try { bt.info = (await s.getCharacteristics()).map(x => /^0000....-0000-1000-8000-00805f9b34fb$/.test(x.uuid) ? x.uuid.slice(4, 8) : x.uuid.split('-')[1]).join(', '); } catch { bt.info = ''; }
       if (p.notify){
         try {
           const n = await s.getCharacteristic(p.notify);
@@ -926,6 +927,11 @@ plush.addEventListener('pointerdown', () => { plushHold = setTimeout(() => { set
 ['pointerup', 'pointerleave', 'pointercancel'].forEach(e => plush.addEventListener(e, () => clearTimeout(plushHold)));
 plush.addEventListener('contextmenu', e => e.preventDefault());
 $('#appVer').textContent = `Версия приложения ${APP_VERSION}`;
+$('#appUpdate').addEventListener('click', async () => {
+  $('#appVer').textContent = 'Проверяю обновление…';
+  try { const r = await navigator.serviceWorker?.getRegistration(); await r?.update(); } catch {}
+  location.reload();
+});
 $('#staffClose').addEventListener('click', () => { staff.hidden = true; });
 pwSel.addEventListener('change', () => savePrefs({width:+pwSel.value}));
 protoSel.addEventListener('change', () => savePrefs({protocol:protoSel.value}));
