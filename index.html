@@ -367,6 +367,8 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
         <select id="delaySel"><option value="6">Быстро</option><option value="25">Средне</option><option value="60">Медленно</option></select></div>
       <div class="staff-row"><label for="bandSel">Порции картинки</label>
         <select id="bandSel"><option value="255">Крупные (255 строк)</option><option value="24">Мелкие (24 строки)</option><option value="1">По одной строке</option></select></div>
+      <div class="staff-row"><label for="feedSel">Запас перед отрывом</label>
+        <select id="feedSel"><option value="6">Маленький</option><option value="12">Средний</option><option value="20">Большой</option></select></div>
       <div class="staff-btns">
         <button class="puff" id="btPair" type="button">Подключить</button>
         <button class="puff soft" id="btTest" type="button">Тестовая печать</button>
@@ -382,7 +384,7 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
 
 <script>
 /* ===== Settings for the cafe ===== */
-const APP_VERSION = '1.7';
+const APP_VERSION = '1.8';
 const CONFIG = {
   cafeName: 'Ваша кофейня',        // printed at the top of the receipt
   handleLabel: 'Мы в сети',        // line above the handle, no platform named
@@ -755,7 +757,7 @@ async function buildReceipt(src){
   try { await Promise.all([document.fonts.load('900 40px Nunito'), document.fonts.load('700 24px Nunito')]); } catch {}
   // Laid out for 576 dots, scaled to the printer's real width
   const W = printWidth(), S = W / 576, R = v => Math.round(v * S);
-  const PX = R(24), PY = R(140), PW = W - 2 * PX;
+  const PX = 0, PY = R(140), PW = W, TM = R(10);     // photo uses the full print width
   const PH = Math.min(Math.round(PW * 1.78), Math.max(PW, Math.round(PW * src.height / src.width)));
   const H = PY + PH + R(168), FY = PY + PH;
   const c = document.createElement('canvas'); c.width = W; c.height = H;
@@ -765,14 +767,14 @@ async function buildReceipt(src){
   const fit = (txt, font, max) => { x.font = font; let s = 1; const w = x.measureText(txt).width; if (w > max) s = max / w; return s; };
   const text = (txt, weight, size, y) => {
     const px = size * S;
-    const s = fit(txt, `${weight} ${px}px Nunito, sans-serif`, W - 2 * PX);
+    const s = fit(txt, `${weight} ${px}px Nunito, sans-serif`, W - 2 * TM);
     x.font = `${weight} ${Math.floor(px * s)}px Nunito, sans-serif`;
     x.fillText(txt, W / 2, y);
   };
   text(CONFIG.cafeName.toUpperCase(), 900, 42, R(72));
   text(fmtDate(), 700, 24, R(108));
   x.lineWidth = Math.max(2, R(3)); x.setLineDash([R(10), R(10)]);
-  x.beginPath(); x.moveTo(PX, R(124)); x.lineTo(W - PX, R(124)); x.stroke();
+  x.beginPath(); x.moveTo(TM, R(124)); x.lineTo(W - TM, R(124)); x.stroke();
   // photo with soft corners
   const p = ditherPhoto(src, PW, PH), r = R(28);
   x.save(); x.beginPath();
@@ -802,7 +804,7 @@ const BT_PROFILES = [
 ];
 const bt = {device:null, ch:null, kind:null, paused:false, busy:false, retry:0};
 const btUsable = !!navigator.bluetooth && !(document.featurePolicy && !document.featurePolicy.allowsFeature('bluetooth'));
-const prefs = {width:CONFIG.printWidth, protocol:'auto', printerName:'', chunk:CONFIG.btChunk, delay:CONFIG.btDelay, band:255};
+const prefs = {width:CONFIG.printWidth, protocol:'auto', printerName:'', chunk:CONFIG.btChunk, delay:CONFIG.btDelay, band:255, feed:12};
 try { Object.assign(prefs, JSON.parse(localStorage.getItem('booth-prefs') || '{}')); } catch {}
 function savePrefs(p){ Object.assign(prefs, p); try { localStorage.setItem('booth-prefs', JSON.stringify(prefs)); } catch {} }
 function printWidth(){ return bt.kind === 'cat' ? 384 : (+prefs.width || 384); }
@@ -905,7 +907,9 @@ function encodeEscpos(canvas){
     out.push(0x1D, 0x76, 0x30, 0x00, bw & 255, bw >> 8, h & 255, h >> 8);
     for (let y = y0; y < y0 + h; y++) for (const b of rows[y]) out.push(b);
   }
-  out.push(0x1B, 0x64, 0x04);
+  // Feed the paper so the end of the picture passes the tear edge (ESC J n feeds n dots, 8 dots = 1 mm)
+  let dots = Math.round((+prefs.feed || 12) * 8) + 24;
+  while (dots > 0){ const n = Math.min(255, dots); out.push(0x1B, 0x4A, n); dots -= n; }
   return Uint8Array.from(out);
 }
 function crc8(a){ let c = 0; for (const b of a){ c ^= b; for (let i = 0; i < 8; i++) c = c & 0x80 ? ((c << 1) ^ 0x07) & 255 : (c << 1) & 255; } return c; }
@@ -920,7 +924,8 @@ function encodeCat(canvas){
   add(catCmd(0xBE, [0x01]));                                                    // apply energy
   add(catCmd(0xBD, [0x20]));                                                    // speed
   for (const line of rows) add(catCmd(0xA2, [...line]));                        // one dot row
-  add(catCmd(0xA1, [0x60, 0x00]));                                              // feed paper out
+  const feed = Math.round((+prefs.feed || 12) * 8) + 24;
+  add(catCmd(0xA1, [feed & 255, feed >> 8]));                                   // feed paper out
   add(catCmd(0xA6, [0xAA,0x55,0x17,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x17]));   // lattice end
   add(catCmd(0xA3, [0x00]));
   return Uint8Array.from(out);
@@ -972,6 +977,8 @@ const delaySel = $('#delaySel'), bandSel = $('#bandSel');
 delaySel.value = String(prefs.delay); bandSel.value = String(prefs.band);
 delaySel.addEventListener('change', () => savePrefs({delay:+delaySel.value}));
 bandSel.addEventListener('change', () => savePrefs({band:+bandSel.value}));
+const feedSel = $('#feedSel'); feedSel.value = String(prefs.feed);
+feedSel.addEventListener('change', () => savePrefs({feed:+feedSel.value}));
 $('#btPair').addEventListener('click', async () => {
   if (!btUsable){ setPrinterState(); return; }
   try { await btPair(); }
