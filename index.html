@@ -208,11 +208,15 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
 .pdot.bad{background:var(--bad);opacity:.85}
 .staff{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:rgba(90,59,44,.35);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.staff-card{width:min(440px,100%);background:var(--paper);color:var(--cocoa);border-radius:32px;padding:24px;
+.staff-card{width:min(440px,100%);max-height:92vh;max-height:92dvh;overflow-y:auto;background:var(--paper);color:var(--cocoa);border-radius:32px;padding:24px;
   display:flex;flex-direction:column;gap:14px;text-align:left;box-shadow:0 24px 50px rgba(90,59,44,.25);-webkit-user-select:text;user-select:text}
 .staff-card h3{margin:0;font-weight:900;font-size:22px}
 .staff-card p{margin:0;font-size:15px;line-height:1.45;color:var(--cocoa-soft)}
 .staff-card #btStatus{color:var(--cocoa);font-weight:800}
+.staff-card h4{margin:6px 0 0;font-weight:900;font-size:17px}
+.staff-field{display:flex;flex-direction:column;gap:6px;font-size:16px}
+.staff-field input{font:inherit;font-weight:700;padding:10px 14px;border-radius:14px;border:2px solid var(--milk);background:var(--cream);color:var(--cocoa);width:100%}
+.staff-field input:focus{outline:3px solid var(--caramel);outline-offset:1px}
 .staff-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;font-size:16px}
 .staff-row select{min-width:0;max-width:100%}
 .staff-card select{font:inherit;font-weight:700;padding:10px 14px;border-radius:14px;border:2px solid var(--milk);background:var(--cream);color:var(--cocoa)}
@@ -232,28 +236,37 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
   <!-- 1. Lure: never dims -->
   <section class="screen active" data-screen="home" aria-label="Главный экран">
     <div class="plush-stage">
-      <div class="plush-wrap" id="plush" role="img" aria-label="Плюшевый фотоаппарат">
-        <svg class="breathe" viewBox="0 0 240 230" aria-hidden="true">
-          <ellipse cx="22" cy="140" rx="15" ry="26" fill="#CF7E7A"/>
-          <ellipse cx="218" cy="140" rx="15" ry="26" fill="#CF7E7A"/>
-          <ellipse cx="82" cy="210" rx="24" ry="13" fill="#CF7E7A"/>
-          <ellipse cx="158" cy="210" rx="24" ry="13" fill="#CF7E7A"/>
-          <rect x="72" y="26" width="66" height="44" rx="20" fill="#C98B4E"/>
-          <rect x="80" y="34" width="50" height="13" rx="6.5" fill="#FFFBF5" opacity=".35"/>
-          <ellipse cx="176" cy="50" rx="16" ry="11" fill="#C98B4E"/>
-          <rect x="22" y="56" width="196" height="152" rx="66" fill="#E9A19D"/>
-          <rect x="34" y="68" width="172" height="128" rx="56" fill="none" stroke="#FFFBF5" stroke-opacity=".75" stroke-width="3" stroke-dasharray="1 10" stroke-linecap="round"/>
-          <ellipse cx="90" cy="84" rx="40" ry="11" fill="#FFFBF5" opacity=".28"/>
-          <circle cx="170" cy="100" r="20" fill="#FFFBF5"/>
-          <circle cx="170" cy="100" r="13" fill="#5A3B2C"/>
-          <circle cx="165" cy="95" r="4" fill="#FFFBF5"/>
+      <div class="plush-wrap" id="plush" role="img" aria-label="Котик-принтер">
+        <svg class="breathe" viewBox="0 0 240 240" aria-hidden="true">
+          <!-- ears -->
+          <path d="M44 66 C38 34 50 18 64 22 C78 26 92 40 98 54 Z" fill="#9ED9D3"/>
+          <path d="M196 66 C202 34 190 18 176 22 C162 26 148 40 142 54 Z" fill="#9ED9D3"/>
+          <path d="M56 56 C54 40 60 32 67 34 C75 37 82 44 85 52 Z" fill="#C4EAE5"/>
+          <path d="M184 56 C186 40 180 32 173 34 C165 37 158 44 155 52 Z" fill="#C4EAE5"/>
+          <!-- body -->
+          <rect x="26" y="44" width="188" height="184" rx="52" fill="#EADCCB"/>
+          <rect x="26" y="40" width="188" height="182" rx="52" fill="#FFFBF5"/>
+          <ellipse cx="86" cy="62" rx="40" ry="9" fill="#FFFFFF" opacity=".9"/>
+          <!-- paper exit lid -->
+          <path d="M26 158 H214 V170 C214 199 191 222 162 222 H78 C49 222 26 199 26 170 Z" fill="#F7EEE3"/>
+          <rect x="40" y="152" width="160" height="9" rx="4.5" fill="#5A3B2C"/>
+          <rect x="52" y="154" width="136" height="3" rx="1.5" fill="#B9A595"/>
+          <path d="M44 176 Q120 188 196 176" stroke="#FFFFFF" stroke-width="4" fill="none" stroke-linecap="round" opacity=".8"/>
+          <!-- face -->
           <g class="eyes">
-            <ellipse cx="92" cy="134" rx="8" ry="10" fill="#5A3B2C"/>
-            <ellipse cx="148" cy="134" rx="8" ry="10" fill="#5A3B2C"/>
+            <g stroke="#2E211A" stroke-width="4" stroke-linecap="round">
+              <path d="M74 80 L68 72"/><path d="M84 74 L83 64"/><path d="M94 76 L99 69"/>
+              <path d="M146 76 L141 69"/><path d="M156 74 L157 64"/><path d="M166 80 L172 72"/>
+            </g>
+            <circle cx="86" cy="98" r="19" fill="#2E211A"/>
+            <circle cx="154" cy="98" r="19" fill="#2E211A"/>
+            <circle cx="84" cy="95" r="8.5" fill="#FFFFFF"/><circle cx="84" cy="95" r="5" fill="#2E211A"/>
+            <circle cx="152" cy="95" r="8.5" fill="#FFFFFF"/><circle cx="152" cy="95" r="5" fill="#2E211A"/>
+            <circle cx="93" cy="104" r="2.8" fill="#FFFFFF"/><circle cx="161" cy="104" r="2.8" fill="#FFFFFF"/>
           </g>
-          <ellipse cx="74" cy="155" rx="13" ry="8" fill="#D9736E" opacity=".45"/>
-          <ellipse cx="166" cy="155" rx="13" ry="8" fill="#D9736E" opacity=".45"/>
-          <path d="M108 151 Q120 163 132 151" stroke="#5A3B2C" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="62" cy="128" rx="12" ry="10" fill="#F39BB2"/>
+          <ellipse cx="178" cy="128" rx="12" ry="10" fill="#F39BB2"/>
+          <path d="M101 126 Q104 132 109 128 Q114 136 120 129 Q126 136 131 128 Q136 132 139 126" stroke="#2E211A" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
       <div class="ground" aria-hidden="true"></div>
@@ -323,16 +336,20 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
     <div class="printer" id="printer">
       <svg id="printerSvg" viewBox="0 0 260 124" aria-hidden="true">
         <g class="pbody">
-          <rect x="14" y="8" width="232" height="104" rx="46" fill="#C98B4E"/>
-          <rect x="26" y="20" width="208" height="80" rx="36" fill="none" stroke="#FFFBF5" stroke-opacity=".65" stroke-width="3" stroke-dasharray="1 10" stroke-linecap="round"/>
-          <ellipse cx="84" cy="30" rx="36" ry="8" fill="#FFFBF5" opacity=".25"/>
+          <path d="M48 34 C43 10 53 -2 65 2 C77 6 88 16 93 28 Z" fill="#9ED9D3"/>
+          <path d="M212 34 C217 10 207 -2 195 2 C183 6 172 16 167 28 Z" fill="#9ED9D3"/>
+          <rect x="30" y="18" width="200" height="100" rx="42" fill="#EADCCB"/>
+          <rect x="30" y="14" width="200" height="98" rx="42" fill="#FFFBF5"/>
+          <ellipse cx="88" cy="28" rx="36" ry="6" fill="#FFFFFF" opacity=".9"/>
           <g class="eyes">
-            <ellipse cx="100" cy="56" rx="7" ry="9" fill="#5A3B2C"/>
-            <ellipse cx="160" cy="56" rx="7" ry="9" fill="#5A3B2C"/>
+            <circle cx="102" cy="52" r="14" fill="#2E211A"/><circle cx="158" cy="52" r="14" fill="#2E211A"/>
+            <circle cx="100" cy="50" r="6.2" fill="#FFFFFF"/><circle cx="100" cy="50" r="3.6" fill="#2E211A"/>
+            <circle cx="156" cy="50" r="6.2" fill="#FFFFFF"/><circle cx="156" cy="50" r="3.6" fill="#2E211A"/>
+            <circle cx="107" cy="57" r="2.2" fill="#FFFFFF"/><circle cx="163" cy="57" r="2.2" fill="#FFFFFF"/>
           </g>
-          <ellipse cx="80" cy="73" rx="11" ry="7" fill="#E9A19D" opacity=".85"/>
-          <ellipse cx="180" cy="73" rx="11" ry="7" fill="#E9A19D" opacity=".85"/>
-          <path class="mouth" d="M120 70 Q130 80 140 70" stroke="#5A3B2C" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="78" cy="74" rx="10" ry="8" fill="#F39BB2"/>
+          <ellipse cx="182" cy="74" rx="10" ry="8" fill="#F39BB2"/>
+          <path class="mouth" d="M114 72 Q116 76 120 74 Q124 79 130 74 Q136 79 140 74 Q144 76 146 72" stroke="#2E211A" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
           <rect x="54" y="98" width="152" height="12" rx="6" fill="#5A3B2C"/>
         </g>
       </svg>
@@ -345,7 +362,12 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
   <!-- Staff settings -->
   <div class="staff" id="staff" hidden>
     <div class="staff-card" role="dialog" aria-labelledby="staffTitle">
-      <h3 id="staffTitle">Принтер</h3>
+      <h3 id="staffTitle">Настройки</h3>
+      <h4>Заведение</h4>
+      <div class="staff-field"><label for="cafeIn">Название заведения</label><input id="cafeIn" type="text" maxlength="40" autocomplete="off"></div>
+      <div class="staff-field"><label for="handleIn">Ник в соцсетях</label><input id="handleIn" type="text" maxlength="40" autocomplete="off" placeholder="@vasha_kofeynya"></div>
+      <p>Печатаются на каждом снимке. Если ник оставить пустым, строки с ником не будет.</p>
+      <h4>Принтер</h4>
       <p id="btStatus">Принтер не подключён</p>
       <p>Включите принтер, нажмите «Подключить» и выберите его в списке. Делать это нужно после каждого перезапуска страницы, если принтер не подхватился сам.</p>
       <div class="staff-row"><label for="pwSel">Ширина ленты</label>
@@ -373,7 +395,7 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
 
 <script>
 /* ===== Settings for the cafe ===== */
-const APP_VERSION = '1.4';
+const APP_VERSION = '1.5';
 const CONFIG = {
   cafeName: 'Ваша кофейня',        // printed at the top of the receipt
   handleLabel: 'Мы в сети',        // line above the handle, no platform named
@@ -771,8 +793,10 @@ async function buildReceipt(src){
   x.arcTo(PX, PY + PH, PX, PY, r); x.arcTo(PX, PY, PX + PW, PY, r); x.closePath(); x.clip();
   x.drawImage(p, PX, PY); x.restore();
   text(CONFIG.thanks, 900, 34, FY + R(50));
-  text(CONFIG.handleLabel, 700, 24, FY + R(86));
-  text(CONFIG.handle, 900, 36, FY + R(130));
+  if (CONFIG.handle){
+    text(CONFIG.handleLabel, 700, 24, FY + R(86));
+    text(CONFIG.handle, 900, 36, FY + R(130));
+  }
   x.setLineDash([R(4), R(12)]); x.beginPath(); x.moveTo(R(12), H - R(10)); x.lineTo(W - R(12), H - R(10)); x.stroke();
   // everything to pure 1-bit, like the printer will do
   const img = x.getImageData(0, 0, W, H), d = img.data;
@@ -796,6 +820,9 @@ try { Object.assign(prefs, JSON.parse(localStorage.getItem('booth-prefs') || '{}
 function savePrefs(p){ Object.assign(prefs, p); try { localStorage.setItem('booth-prefs', JSON.stringify(prefs)); } catch {} }
 function printWidth(){ return bt.kind === 'cat' ? 384 : (+prefs.width || 384); }
 
+// Cafe name and handle set on the tablet override the defaults
+if (prefs.cafeName) CONFIG.cafeName = prefs.cafeName;
+if ('handle' in prefs) CONFIG.handle = prefs.handle;
 const pdot = $('#pdot'), btStatus = $('#btStatus');
 function setPrinterState(msg){
   const ok = !!(bt.device && bt.device.gatt.connected && bt.ch);
@@ -942,6 +969,18 @@ pwSel.addEventListener('change', () => savePrefs({width:+pwSel.value}));
 protoSel.addEventListener('change', () => savePrefs({protocol:protoSel.value}));
 const chunkSel = $('#chunkSel'); chunkSel.value = String(prefs.chunk);
 chunkSel.addEventListener('change', () => savePrefs({chunk:+chunkSel.value}));
+const cafeIn = $('#cafeIn'), handleIn = $('#handleIn');
+cafeIn.value = CONFIG.cafeName; handleIn.value = CONFIG.handle;
+cafeIn.addEventListener('input', () => {
+  CONFIG.cafeName = cafeIn.value.trim() || 'Ваша кофейня';
+  savePrefs({cafeName:cafeIn.value.trim()});
+});
+handleIn.addEventListener('change', () => {
+  let h = handleIn.value.trim().replace(/\s+/g, '');
+  if (h && !h.startsWith('@')) h = '@' + h;
+  handleIn.value = h; CONFIG.handle = h;
+  savePrefs({handle:h});
+});
 const delaySel = $('#delaySel'), bandSel = $('#bandSel');
 delaySel.value = String(prefs.delay); bandSel.value = String(prefs.band);
 delaySel.addEventListener('change', () => savePrefs({delay:+delaySel.value}));
