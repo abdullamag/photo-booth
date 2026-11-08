@@ -352,6 +352,8 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
         <select id="pwSel"><option value="384">57 мм (384 точки)</option><option value="576">80 мм (576 точек)</option></select></div>
       <div class="staff-row"><label for="protoSel">Протокол</label>
         <select id="protoSel"><option value="auto">Определить самому</option><option value="cat">Мини-принтер (Fun Print и подобные)</option><option value="escpos">ESC/POS (Phomemo, чековые)</option></select></div>
+      <div class="staff-row"><label for="chunkSel">Размер пакета</label>
+        <select id="chunkSel"><option value="20">20 байт (надёжно)</option><option value="100">100 байт</option><option value="180">180 байт (быстро)</option></select></div>
       <div class="staff-btns">
         <button class="puff" id="btPair" type="button">Подключить</button>
         <button class="puff soft" id="btTest" type="button">Тестовая печать</button>
@@ -366,7 +368,7 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
 
 <script>
 /* ===== Settings for the cafe ===== */
-const APP_VERSION = '1.0';
+const APP_VERSION = '1.1';
 const CONFIG = {
   cafeName: 'Ваша кофейня',        // printed at the top of the receipt
   handleLabel: 'Мы в сети',        // line above the handle, no platform named
@@ -375,8 +377,8 @@ const CONFIG = {
   printUrl: null,                  // optional network print server instead of Bluetooth
   printWidth: 384,                 // dots across: 384 for 57 mm mini printers, 576 for 80 mm
   catEnergy: 0x3000,               // darkness for mini printers: 0x2000 lighter, 0x6000 darker
-  btChunk: 100,                    // bytes per Bluetooth write
-  btDelay: 12,                     // ms between writes; raise it if the printer skips lines
+  btChunk: 20,                     // bytes per Bluetooth write; Android cuts longer packets to 20 unless the printer allows more
+  btDelay: 6,                      // ms between writes; raise it if the printer skips lines
   fullscreen: true,                // go fullscreen on the tablet after the first tap
   defaultTimer: 3,                 // seconds: 0, 3, 5 or 10
   backHomeAfterPrintMs: 3200,
@@ -784,7 +786,7 @@ const BT_PROFILES = [
 ];
 const bt = {device:null, ch:null, kind:null, paused:false, busy:false, retry:0};
 const btUsable = !!navigator.bluetooth && !(document.featurePolicy && !document.featurePolicy.allowsFeature('bluetooth'));
-const prefs = {width:CONFIG.printWidth, protocol:'auto', printerName:''};
+const prefs = {width:CONFIG.printWidth, protocol:'auto', printerName:'', chunk:CONFIG.btChunk};
 try { Object.assign(prefs, JSON.parse(localStorage.getItem('booth-prefs') || '{}')); } catch {}
 function savePrefs(p){ Object.assign(prefs, p); try { localStorage.setItem('booth-prefs', JSON.stringify(prefs)); } catch {} }
 function printWidth(){ return bt.kind === 'cat' ? 384 : (+prefs.width || 384); }
@@ -855,9 +857,10 @@ async function btPair(){
 
 async function btWrite(bytes){
   const ch = bt.ch, quick = ch.properties.writeWithoutResponse && ch.writeValueWithoutResponse;
-  for (let i = 0; i < bytes.length; i += CONFIG.btChunk){
+  const size = +prefs.chunk || 20;
+  for (let i = 0; i < bytes.length; i += size){
     for (let w = 0; bt.paused && w < 200; w++) await wait(25);
-    const part = bytes.subarray(i, i + CONFIG.btChunk);
+    const part = bytes.subarray(i, i + size);
     if (quick) await ch.writeValueWithoutResponse(part);
     else if (ch.writeValueWithResponse) await ch.writeValueWithResponse(part);
     else await ch.writeValue(part);
@@ -926,6 +929,8 @@ $('#appVer').textContent = `Версия приложения ${APP_VERSION}`;
 $('#staffClose').addEventListener('click', () => { staff.hidden = true; });
 pwSel.addEventListener('change', () => savePrefs({width:+pwSel.value}));
 protoSel.addEventListener('change', () => savePrefs({protocol:protoSel.value}));
+const chunkSel = $('#chunkSel'); chunkSel.value = String(prefs.chunk);
+chunkSel.addEventListener('change', () => savePrefs({chunk:+chunkSel.value}));
 $('#btPair').addEventListener('click', async () => {
   if (!btUsable){ setPrinterState(); return; }
   try { await btPair(); }
@@ -937,15 +942,28 @@ $('#btPair').addEventListener('click', async () => {
 });
 $('#btTest').addEventListener('click', async () => {
   if (!bt.device){ setPrinterState('Сначала подключите принтер'); return; }
-  const c = document.createElement('canvas'); c.width = 900; c.height = 900;
-  const x = c.getContext('2d'), g = x.createLinearGradient(0, 0, 900, 0);
-  g.addColorStop(0, '#000'); g.addColorStop(1, '#fff'); x.fillStyle = g; x.fillRect(0, 0, 900, 900);
-  x.fillStyle = '#fff'; x.beginPath(); x.arc(450, 450, 260, 0, Math.PI * 2); x.fill();
-  x.fillStyle = '#000'; x.font = '900 120px Nunito, sans-serif'; x.textAlign = 'center'; x.fillText('ТЕСТ', 450, 492);
+  // Short pure black-and-white strip: quick to send, easy to judge
+  const W = printWidth(), H = 200, c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
+  x.fillStyle = '#000';
+  x.fillRect(0, 0, W, 16);                                   // full-width bar on top
+  x.fillRect(8, 30, 90, 90);                                 // solid square on the left
+  for (let i = 0; i < 12; i++) x.fillRect(W - 120 + (i % 4) * 28, 30 + Math.floor(i / 4) * 30, 14, 14); // dots on the right
+  x.font = `900 ${Math.round(W / 8)}px Nunito, sans-serif`; x.textAlign = 'center';
+  x.fillText('ТЕСТ ' + APP_VERSION, W / 2, 105);
+  x.font = `700 ${Math.round(W / 18)}px Nunito, sans-serif`;
+  x.fillText(`${bt.kind === 'cat' ? 'мини' : 'ESC/POS'} · пакет ${prefs.chunk}`, W / 2, 160);
+  x.fillRect(0, H - 16, W, 16);                              // full-width bar at the bottom
+  const img = x.getImageData(0, 0, W, H), d = img.data;
+  for (let i = 0; i < d.length; i += 4){ const v = d[i] < 128 ? 0 : 255; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+  x.putImageData(img, 0, 0);
   setPrinterState('Печатаю тест…');
-  try { await btPrint(await buildReceipt(c)); setPrinterState(); }
+  const t0 = performance.now();
+  try { await btPrint(c); setPrinterState(`Тест отправлен за ${((performance.now() - t0) / 1000).toFixed(1)} с. ` + btStatusLine()); }
   catch (e){ setPrinterState('Тест не напечатался: ' + e.message); }
 });
+function btStatusLine(){ return `${bt.device?.name || ''} · ${bt.kind === 'cat' ? 'мини-принтер' : 'ESC/POS'} · ${bt.info || ''}`; }
 
 // Fullscreen on the tablet after the first tap
 if (CONFIG.fullscreen && btUsable){
