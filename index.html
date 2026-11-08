@@ -368,7 +368,7 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
       <div class="staff-row"><label for="bandSel">Порции картинки</label>
         <select id="bandSel"><option value="255">Крупные (255 строк)</option><option value="24">Мелкие (24 строки)</option><option value="1">По одной строке</option></select></div>
       <div class="staff-row"><label for="feedSel">Запас перед отрывом</label>
-        <select id="feedSel"><option value="6">Маленький</option><option value="12">Средний</option><option value="20">Большой</option></select></div>
+        <select id="feedSel"><option value="10">Маленький (1 см)</option><option value="18">Средний (2 см)</option><option value="28">Большой (3 см)</option></select></div>
       <div class="staff-btns">
         <button class="puff" id="btPair" type="button">Подключить</button>
         <button class="puff soft" id="btTest" type="button">Тестовая печать</button>
@@ -384,7 +384,7 @@ h2{font-size:clamp(30px,5vw,52px);line-height:1.08}
 
 <script>
 /* ===== Settings for the cafe ===== */
-const APP_VERSION = '1.8';
+const APP_VERSION = '1.9';
 const CONFIG = {
   cafeName: 'Ваша кофейня',        // printed at the top of the receipt
   handleLabel: 'Мы в сети',        // line above the handle, no platform named
@@ -759,7 +759,12 @@ async function buildReceipt(src){
   const W = printWidth(), S = W / 576, R = v => Math.round(v * S);
   const PX = 0, PY = R(140), PW = W, TM = R(10);     // photo uses the full print width
   const PH = Math.min(Math.round(PW * 1.78), Math.max(PW, Math.round(PW * src.height / src.width)));
-  const H = PY + PH + R(168), FY = PY + PH;
+  const FY = PY + PH;
+  const textEnd = FY + (CONFIG.handle ? R(130) : R(50));
+  // Blank paper after the text, printed as part of the picture so every printer feeds it:
+  // the text has to pass the tear edge before the guest tears the photo off
+  const tail = Math.round((+prefs.tail || 18) * 8);
+  const H = textEnd + R(16) + tail;
   const c = document.createElement('canvas'); c.width = W; c.height = H;
   const x = c.getContext('2d');
   x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
@@ -786,7 +791,6 @@ async function buildReceipt(src){
     text(CONFIG.handleLabel, 700, 24, FY + R(86));
     text(CONFIG.handle, 900, 36, FY + R(130));
   }
-  x.setLineDash([R(4), R(12)]); x.beginPath(); x.moveTo(R(12), H - R(10)); x.lineTo(W - R(12), H - R(10)); x.stroke();
   // everything to pure 1-bit, like the printer will do
   const img = x.getImageData(0, 0, W, H), d = img.data;
   for (let i = 0; i < d.length; i += 4){ const v = d[i] < 128 ? 0 : 255; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
@@ -804,7 +808,7 @@ const BT_PROFILES = [
 ];
 const bt = {device:null, ch:null, kind:null, paused:false, busy:false, retry:0};
 const btUsable = !!navigator.bluetooth && !(document.featurePolicy && !document.featurePolicy.allowsFeature('bluetooth'));
-const prefs = {width:CONFIG.printWidth, protocol:'auto', printerName:'', chunk:CONFIG.btChunk, delay:CONFIG.btDelay, band:255, feed:12};
+const prefs = {width:CONFIG.printWidth, protocol:'auto', printerName:'', chunk:CONFIG.btChunk, delay:CONFIG.btDelay, band:255, tail:18};
 try { Object.assign(prefs, JSON.parse(localStorage.getItem('booth-prefs') || '{}')); } catch {}
 function savePrefs(p){ Object.assign(prefs, p); try { localStorage.setItem('booth-prefs', JSON.stringify(prefs)); } catch {} }
 function printWidth(){ return bt.kind === 'cat' ? 384 : (+prefs.width || 384); }
@@ -908,7 +912,7 @@ function encodeEscpos(canvas){
     for (let y = y0; y < y0 + h; y++) for (const b of rows[y]) out.push(b);
   }
   // Feed the paper so the end of the picture passes the tear edge (ESC J n feeds n dots, 8 dots = 1 mm)
-  let dots = Math.round((+prefs.feed || 12) * 8) + 24;
+  let dots = 24;   // the blank tail is already inside the picture
   while (dots > 0){ const n = Math.min(255, dots); out.push(0x1B, 0x4A, n); dots -= n; }
   return Uint8Array.from(out);
 }
@@ -924,7 +928,7 @@ function encodeCat(canvas){
   add(catCmd(0xBE, [0x01]));                                                    // apply energy
   add(catCmd(0xBD, [0x20]));                                                    // speed
   for (const line of rows) add(catCmd(0xA2, [...line]));                        // one dot row
-  const feed = Math.round((+prefs.feed || 12) * 8) + 24;
+  const feed = 24;
   add(catCmd(0xA1, [feed & 255, feed >> 8]));                                   // feed paper out
   add(catCmd(0xA6, [0xAA,0x55,0x17,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x17]));   // lattice end
   add(catCmd(0xA3, [0x00]));
@@ -977,8 +981,8 @@ const delaySel = $('#delaySel'), bandSel = $('#bandSel');
 delaySel.value = String(prefs.delay); bandSel.value = String(prefs.band);
 delaySel.addEventListener('change', () => savePrefs({delay:+delaySel.value}));
 bandSel.addEventListener('change', () => savePrefs({band:+bandSel.value}));
-const feedSel = $('#feedSel'); feedSel.value = String(prefs.feed);
-feedSel.addEventListener('change', () => savePrefs({feed:+feedSel.value}));
+const feedSel = $('#feedSel'); feedSel.value = String(prefs.tail);
+feedSel.addEventListener('change', () => savePrefs({tail:+feedSel.value}));
 $('#btPair').addEventListener('click', async () => {
   if (!btUsable){ setPrinterState(); return; }
   try { await btPair(); }
